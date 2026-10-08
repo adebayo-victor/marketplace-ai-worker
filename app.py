@@ -10,7 +10,7 @@ def run_ai_task(job):
     kiosk_id = job.get('kiosk_id')
     kiosk_name = job.get('kiosk_name', 'Store')
     callback_url = job.get('callback_url')
-    secret = job.get('secret')
+    secret = secret = (job.get('secret') or os.environ.get('BUILDER_SECRET_KEY') or '').strip()
 
     print(f"🚀 [WORKER] Starting AI template generation for #{kiosk_id}: {kiosk_name}")
 

@@ -347,7 +347,7 @@ def query_openrouter(prompt_instruction: str, api_key: str) -> str:
         "X-Title": "Marketplace Kiosk Engine"
     }
 
-    model_name = os.environ.get('OPENROUTER_MODEL') or 'google/gemini-2.0-flash-001'
+    model_name = os.environ.get('OPENROUTER_MODEL') or 'google/gemini-2.0-flash-exp:free
 
     payload = {
         "model": model_name,

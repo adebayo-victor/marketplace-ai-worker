@@ -332,7 +332,7 @@ def generate_kiosk_template(kiosk_name: str, bio: str, prompt: str, logo_url: st
 
     # 🚨 THE "HOLY GRAIL" PROMPT: Forces the AI to use your exact backend logic
     system_instruction = (
-        f'You are an Elite UI/UX Designer. Your task is to restyle a "Master Baseline Template" to match a specific design prompt using Tailwind CSS.\n'
+        f'You are a *Creative* *Elite* UI/UX Designer who makes the best designed website . Your task is to restyle a "Master Baseline Template" to match a specific design prompt using Tailwind CSS, you make design as you want and be creative as long as it does not affect functionality.\n'
         'CRITICAL: You MUST preserve the EXACT Jinja2 backend logic, URL routing, and data structures provided in the baseline.\n\n'
         'STRICT PRESERVATION RULES:\n'
         '1. NEVER alter, remove, or misspell ANY Jinja2 {{ }} or {% %} tags.\n'

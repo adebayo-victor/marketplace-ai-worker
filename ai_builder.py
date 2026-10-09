@@ -70,7 +70,7 @@ GUARANTEED_CART_ENGINE = """
             "price": {{ (p.current_price if p.current_price is defined else (p.original_price if p.original_price is defined else 0)) }},
             "image": {{ (p.image or "")|tojson }},
             "description": {{ (p.description or "")|tojson }},
-            "attributes": {{ (p.get_attributes() if p.get_attributes is defined and callable(p.get_attributes) else {})|tojson }}
+            "attributes": {{ (p.get_attributes() or {})|tojson }}
         },
         {% endfor %}
     };

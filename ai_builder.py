@@ -314,8 +314,17 @@ def query_openrouter(prompt_instruction: str, api_key: str) -> str:
         "HTTP-Referer": "https://marketplace-beryl-delta.vercel.app",
         "X-Title": "Marketplace Kiosk Engine"
     }
-    model_name = os.environ.get('OPENROUTER_MODEL') or 'meta-llama/llama-3.3-70b-instruct'
-    payload = {"model": model_name, "messages": [{"role": "user", "content": prompt_instruction}]}
+    
+    # 🚀 UPDATED: Using the top-tier FREE NVIDIA Nemotron 3 Ultra model.
+    # It has 550B parameters, making it smart enough to follow strict Jinja2 rules 
+    # without hallucinating. If you set an env var, it will use that instead.
+    model_name = os.environ.get('OPENROUTER_MODEL') or 'nvidia/nemotron-3-ultra:free'
+
+    payload = {
+        "model": model_name,
+        "messages": [{"role": "user", "content": prompt_instruction}]
+    }
+    
     try:
         req = urllib.request.Request(url, data=json.dumps(payload).encode('utf-8'), headers=headers, method='POST')
         with urllib.request.urlopen(req, timeout=60) as response:
@@ -324,7 +333,6 @@ def query_openrouter(prompt_instruction: str, api_key: str) -> str:
     except Exception as e:
         print(f"OpenRouter Error: {e}", flush=True)
         return None
-
 
 def generate_kiosk_template(kiosk_name: str, bio: str, prompt: str, logo_url: str = '', hero_url: str = '', bg_url: str = '', currency: str = '₦') -> str:
     primary_meta_img = logo_url or hero_url or bg_url or ''

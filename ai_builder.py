@@ -4,19 +4,20 @@ import json
 import urllib.request
 import urllib.error
 
-# 🛡️ THE BULLETPROOF INTERACTIVE ENGINE (WITH PURE CSS FAILSAFES)
+# 🛡️ THE BULLETPROOF INTERACTIVE ENGINE (MODAL INSPECTION + INSTANT TOAST ADD-TO-BAG)
 GUARANTEED_CART_ENGINE = """
-<!-- ========================================== -->
-<!-- BULLETPROOF SHOPPING BAG & CHECKOUT ENGINE -->
-<!-- ========================================== -->
+<!-- ======================================================== -->
+<!-- BULLETPROOF DETAIL MODAL, TOAST & WHATSAPP CHECKOUT ENGINE -->
+<!-- ======================================================== -->
 <style>
     /* Strict Failsafe CSS: Modal & Drawer can NEVER leak into page layout */
     #productModal {
         display: none !important;
         position: fixed !important;
         inset: 0 !important;
-        background: rgba(0, 0, 0, 0.75) !important;
-        backdrop-filter: blur(6px) !important;
+        background: rgba(0, 0, 0, 0.85) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
         z-index: 999999 !important;
         align-items: center !important;
         justify-content: center !important;
@@ -24,15 +25,17 @@ GUARANTEED_CART_ENGINE = """
         box-sizing: border-box !important;
     }
     #productModal.active { display: flex !important; }
+    
     #cartOverlay {
         display: none !important;
         position: fixed !important;
         inset: 0 !important;
-        background: rgba(0, 0, 0, 0.6) !important;
+        background: rgba(0, 0, 0, 0.65) !important;
         backdrop-filter: blur(4px) !important;
         z-index: 999998 !important;
     }
     #cartOverlay.active { display: block !important; }
+    
     #cartDrawer {
         position: fixed !important;
         top: 0 !important;
@@ -54,7 +57,44 @@ GUARANTEED_CART_ENGINE = """
         box-sizing: border-box !important;
     }
     #cartDrawer.open { transform: translateX(0%) !important; }
+
+    /* Animated Quick Add Toast */
+    #cartToast {
+        position: fixed !important;
+        bottom: 24px !important;
+        right: 24px !important;
+        background: #16a34a !important;
+        color: #ffffff !important;
+        padding: 12px 20px !important;
+        border-radius: 9999px !important;
+        font-family: inherit !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.02em !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        z-index: 9999999 !important;
+        transform: translateY(100px) scale(0.95);
+        opacity: 0;
+        pointer-events: none;
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease !important;
+    }
+    #cartToast.show {
+        transform: translateY(0) scale(1) !important;
+        opacity: 1 !important;
+        pointer-events: auto;
+    }
 </style>
+
+<!-- Quick Add Success Toast -->
+<div id="cartToast">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
+    <span id="cartToastMsg">Added to bag!</span>
+</div>
 
 <script>
     window.KIOSK_PRODUCTS = {
@@ -71,19 +111,32 @@ GUARANTEED_CART_ENGINE = """
     };
 </script>
 
-<!-- Product Specs & Options Modal -->
-<div id="productModal">
-    <div class="bg-[#14161f] border border-stone-800 p-6 md:p-8 max-w-sm w-full rounded-3xl shadow-2xl relative text-white">
-        <button type="button" onclick="closeProductModal()" class="absolute top-4 right-4 text-stone-400 hover:text-white font-bold text-xl cursor-pointer">&times;</button>
-        <span class="text-[10px] font-mono text-amber-400 uppercase tracking-widest block mb-1">Select Specifications</span>
-        <h3 id="modalProductName" class="font-bold text-lg text-white mb-2 uppercase"></h3>
-        <p id="modalProductDesc" class="text-xs text-stone-400 mb-4 leading-relaxed"></p>
-        <p id="modalProductPrice" class="font-mono text-2xl font-black text-amber-400 mb-6"></p>
-        <div id="modalVariantsContainer" class="space-y-4 mb-6"></div>
-        <button type="button" onclick="confirmAddToCart()" 
-                class="w-full bg-amber-400 hover:bg-amber-300 text-black font-black py-4 rounded-xl text-xs uppercase tracking-wider transition cursor-pointer shadow-lg">
-            ADD TO BAG &rarr;
-        </button>
+<!-- High-Impact Product Inspection & Specs Overlay -->
+<div id="productModal" onclick="if(event.target === this) closeProductModal();">
+    <div class="bg-[#14161f] border border-stone-800 max-w-xl w-full rounded-3xl shadow-2xl relative text-white overflow-hidden flex flex-col md:flex-row max-h-[90vh]">
+        <button type="button" onclick="closeProductModal()" class="absolute top-4 right-4 z-10 bg-black/60 hover:bg-black text-stone-300 hover:text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg cursor-pointer transition">&times;</button>
+        
+        <!-- Large High-Res Picture Preview -->
+        <div id="modalImgContainer" class="w-full md:w-1/2 bg-stone-900 flex items-center justify-center relative min-h-[220px] md:min-h-full overflow-hidden border-b md:border-b-0 md:border-r border-stone-800">
+            <img id="modalProductImg" src="" alt="Product Preview" class="w-full h-full object-cover max-h-[300px] md:max-h-full">
+            <div id="modalImgPlaceholder" class="text-stone-500 font-mono text-xs uppercase" style="display:none;">NO PICTURE</div>
+        </div>
+
+        <!-- Product Information & Order Box -->
+        <div class="p-6 md:p-8 w-full md:w-1/2 flex flex-col justify-between overflow-y-auto">
+            <div>
+                <span class="text-[10px] font-mono text-amber-400 uppercase tracking-widest block mb-1">Product Details</span>
+                <h3 id="modalProductName" class="font-bold text-xl text-white mb-2 tracking-tight"></h3>
+                <p id="modalProductDesc" class="text-xs text-stone-400 mb-4 leading-relaxed"></p>
+                <p id="modalProductPrice" class="font-mono text-2xl font-black text-amber-400 mb-4"></p>
+                <div id="modalVariantsContainer" class="space-y-3 mb-6"></div>
+            </div>
+
+            <button type="button" onclick="confirmAddToCartFromModal()" 
+                    class="w-full bg-amber-400 hover:bg-amber-300 text-black font-black py-4 rounded-xl text-xs uppercase tracking-wider transition cursor-pointer shadow-lg">
+                ADD TO BAG &rarr;
+            </button>
+        </div>
     </div>
 </div>
 
@@ -125,31 +178,78 @@ GUARANTEED_CART_ENGINE = """
     const storeCurrency = {{ (store.currency if store and store.currency else '₦')|tojson }};
     let cart = [];
     let currentModalProduct = null;
+    let toastTimeout = null;
 
-    // Guaranteed Live Search
-    function filterProducts(query) {
-        const q = (query || '').toLowerCase().trim();
-        const cards = document.querySelectorAll('.product-card');
-        cards.forEach(card => {
-            const name = (card.getAttribute('data-name') || card.innerText || '').toLowerCase();
-            card.style.display = name.includes(q) ? '' : 'none';
-        });
+    // Toast Notification Dispatcher
+    function showCartToast(message) {
+        const toast = document.getElementById('cartToast');
+        const msgEl = document.getElementById('cartToastMsg');
+        if (!toast || !msgEl) return;
+        
+        msgEl.innerText = message || 'Added to bag!';
+        toast.classList.add('show');
+        
+        if (toastTimeout) clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2500);
     }
 
-    function toggleCart() {
-        const drawer = document.getElementById('cartDrawer');
-        const overlay = document.getElementById('cartOverlay');
-        if (drawer) drawer.classList.toggle('open');
-        if (overlay) overlay.classList.toggle('active');
+    // ⚡ INSTANT DIRECT ADD-TO-BAG (NO MODAL, NO FORCED DRAWER)
+    function quickAddToCart(productId, event) {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        const product = window.KIOSK_PRODUCTS[productId];
+        if (!product) return;
+
+        // Check if existing item in cart
+        const existing = cart.find(item => item.product_id === product.id && !item.variants);
+        if (existing) {
+            existing.quantity += 1;
+        } else {
+            cart.push({
+                product_id: product.id,
+                name: product.name,
+                price: product.price,
+                variants: '',
+                quantity: 1
+            });
+        }
+
+        updateCartUI();
+        showCartToast(`Added ${product.name} to bag!`);
     }
 
+    // 🔍 FULL PICTURE & DETAIL INSPECTION MODAL (CALLED BY CLICKING PICTURE/CARD)
     function openProductModal(productId) {
         const product = window.KIOSK_PRODUCTS[productId];
         if (!product) return;
         currentModalProduct = product;
+
         document.getElementById('modalProductName').innerText = product.name;
-        document.getElementById('modalProductDesc').innerText = product.description || '';
+        document.getElementById('modalProductDesc').innerText = product.description || 'Premium curated quality.';
         document.getElementById('modalProductPrice').innerText = `${storeCurrency}${Number(product.price).toLocaleString()}`;
+        
+        // Handle Picture
+        const imgEl = document.getElementById('modalProductImg');
+        const placeholderEl = document.getElementById('modalImgPlaceholder');
+        if (product.image && product.image !== 'default_product.png') {
+            imgEl.src = product.image;
+            imgEl.style.display = 'block';
+            placeholderEl.style.display = 'none';
+            imgEl.onerror = function() {
+                this.style.display = 'none';
+                placeholderEl.style.display = 'block';
+            };
+        } else {
+            imgEl.style.display = 'none';
+            placeholderEl.style.display = 'block';
+        }
+
+        // Handle Variants
         const container = document.getElementById('modalVariantsContainer');
         container.innerHTML = '';
         const attrs = product.attributes || {};
@@ -164,6 +264,7 @@ GUARANTEED_CART_ENGINE = """
             `;
             container.appendChild(group);
         }
+
         const modal = document.getElementById('productModal');
         if (modal) modal.classList.add('active');
     }
@@ -174,12 +275,14 @@ GUARANTEED_CART_ENGINE = """
         currentModalProduct = null;
     }
 
-    function confirmAddToCart() {
+    // Add To Bag from inside Modal
+    function confirmAddToCartFromModal() {
         if (!currentModalProduct) return;
         const selected = [];
         document.querySelectorAll('.variant-select').forEach(s => {
             selected.push(`${s.getAttribute('data-attr')}: ${s.value}`);
         });
+
         cart.push({
             product_id: currentModalProduct.id,
             name: currentModalProduct.name,
@@ -187,9 +290,26 @@ GUARANTEED_CART_ENGINE = """
             variants: selected.join(' | '),
             quantity: 1
         });
+
         updateCartUI();
+        showCartToast(`Added ${currentModalProduct.name} to bag!`);
         closeProductModal();
-        toggleCart();
+    }
+
+    function filterProducts(query) {
+        const q = (query || '').toLowerCase().trim();
+        const cards = document.querySelectorAll('.product-card');
+        cards.forEach(card => {
+            const name = (card.getAttribute('data-name') || card.innerText || '').toLowerCase();
+            card.style.display = name.includes(q) ? '' : 'none';
+        });
+    }
+
+    function toggleCart() {
+        const drawer = document.getElementById('cartDrawer');
+        const overlay = document.getElementById('cartOverlay');
+        if (drawer) drawer.classList.toggle('open');
+        if (overlay) overlay.classList.toggle('active');
     }
 
     function updateCartUI() {
@@ -308,20 +428,24 @@ FALLBACK_TEMPLATE_LUXURY = """<!DOCTYPE html>
             {% for p in regular_products %}
             <div class="product-card bg-[#14161f] border border-stone-800/90 rounded-2xl p-5 flex flex-col justify-between hover:border-amber-400/40 transition shadow-xl" data-name="{{ p.name }}">
                 <div>
-                    <div class="w-full h-48 bg-stone-900 rounded-xl overflow-hidden mb-4 relative flex items-center justify-center border border-stone-800">
+                    <!-- Click Picture To Inspect in Modal -->
+                    <div onclick="openProductModal({{ p.id }})" class="w-full h-48 bg-stone-900 rounded-xl overflow-hidden mb-4 relative flex items-center justify-center border border-stone-800 cursor-pointer group">
                         {% if p.image and p.image != 'default_product.png' %}
-                        <img src="{{ p.image }}" alt="{{ p.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-full h-full object-cover">
+                        <img src="{{ p.image }}" alt="{{ p.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                         <div style="display:none;" class="text-stone-500 text-xs font-mono uppercase tracking-wider">NO PREVIEW</div>
                         {% else %}
                         <div class="text-stone-500 text-xs font-mono uppercase tracking-wider">NO PREVIEW</div>
                         {% endif %}
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-xs font-bold text-amber-300">VIEW DETAILS 👁️</div>
                     </div>
-                    <h3 class="text-lg font-bold text-white mb-1 uppercase tracking-wide font-serif">{{ p.name }}</h3>
+
+                    <h3 onclick="openProductModal({{ p.id }})" class="text-lg font-bold text-white mb-1 uppercase tracking-wide font-serif cursor-pointer hover:text-amber-400 transition">{{ p.name }}</h3>
                     <p class="text-xs text-stone-400 mb-4 line-clamp-2 leading-relaxed">{{ p.description or 'Artisanal formulation.' }}</p>
                 </div>
                 <div class="pt-4 border-t border-stone-800 flex justify-between items-center">
                     <span class="font-mono text-lg font-black text-amber-400">{{ store.currency if store and store.currency else '₦' }}{{ "{:,.0f}".format(p.current_price) }}</span>
-                    <button type="button" onclick="openProductModal({{ p.id }})" class="bg-amber-400 hover:bg-amber-300 text-black font-black text-[10px] uppercase tracking-wider py-2.5 px-4 rounded-xl transition cursor-pointer">ORDER NOW</button>
+                    <!-- Quick Add Without Modal -->
+                    <button type="button" onclick="quickAddToCart({{ p.id }}, event)" class="bg-amber-400 hover:bg-amber-300 text-black font-black text-[10px] uppercase tracking-wider py-2.5 px-4 rounded-xl transition cursor-pointer">ADD TO BAG</button>
                 </div>
             </div>
             {% endfor %}
@@ -373,20 +497,23 @@ FALLBACK_TEMPLATE_MINIMAL = """<!DOCTYPE html>
             {% for p in regular_products %}
             <div class="product-card bg-[#11131a] border border-stone-800/80 rounded-xl p-4 flex flex-col justify-between hover:border-stone-600 transition" data-name="{{ p.name }}">
                 <div>
-                    <div class="w-full h-44 bg-stone-900 rounded-lg overflow-hidden mb-3 relative flex items-center justify-center border border-stone-800">
+                    <!-- Click Picture To Inspect -->
+                    <div onclick="openProductModal({{ p.id }})" class="w-full h-44 bg-stone-900 rounded-lg overflow-hidden mb-3 relative flex items-center justify-center border border-stone-800 cursor-pointer group">
                         {% if p.image and p.image != 'default_product.png' %}
-                        <img src="{{ p.image }}" alt="{{ p.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-full h-full object-cover">
+                        <img src="{{ p.image }}" alt="{{ p.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                         <div style="display:none;" class="text-stone-500 text-xs font-mono uppercase">NO PREVIEW</div>
                         {% else %}
                         <div class="text-stone-500 text-xs font-mono uppercase">NO PREVIEW</div>
                         {% endif %}
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-xs font-bold text-white">DETAILS 👁️</div>
                     </div>
-                    <h3 class="text-base font-bold text-white mb-1 tracking-tight">{{ p.name }}</h3>
+                    <h3 onclick="openProductModal({{ p.id }})" class="text-base font-bold text-white mb-1 tracking-tight cursor-pointer hover:text-stone-300">{{ p.name }}</h3>
                     <p class="text-xs text-stone-400 mb-3 line-clamp-2">{{ p.description or 'In-stock item.' }}</p>
                 </div>
                 <div class="pt-3 border-t border-stone-800 flex justify-between items-center">
                     <span class="font-mono text-base font-bold text-white">{{ store.currency if store and store.currency else '₦' }}{{ "{:,.0f}".format(p.current_price) }}</span>
-                    <button type="button" onclick="openProductModal({{ p.id }})" class="bg-white hover:bg-stone-200 text-black font-black text-[10px] uppercase tracking-wider py-2 px-3 rounded-lg transition cursor-pointer">ADD TO BAG</button>
+                    <!-- Quick Add Without Modal -->
+                    <button type="button" onclick="quickAddToCart({{ p.id }}, event)" class="bg-white hover:bg-stone-200 text-black font-black text-[10px] uppercase tracking-wider py-2 px-3 rounded-lg transition cursor-pointer">ADD TO BAG</button>
                 </div>
             </div>
             {% endfor %}
@@ -441,20 +568,23 @@ FALLBACK_TEMPLATE_URBAN = """<!DOCTYPE html>
             {% for p in regular_products %}
             <div class="product-card bg-[#181a24] border border-stone-800 rounded-2xl p-5 flex flex-col justify-between hover:border-red-500/50 transition shadow-xl" data-name="{{ p.name }}">
                 <div>
-                    <div class="w-full h-48 bg-stone-900 rounded-xl overflow-hidden mb-4 relative flex items-center justify-center border border-stone-800">
+                    <!-- Click Picture To Inspect -->
+                    <div onclick="openProductModal({{ p.id }})" class="w-full h-48 bg-stone-900 rounded-xl overflow-hidden mb-4 relative flex items-center justify-center border border-stone-800 cursor-pointer group">
                         {% if p.image and p.image != 'default_product.png' %}
-                        <img src="{{ p.image }}" alt="{{ p.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-full h-full object-cover">
+                        <img src="{{ p.image }}" alt="{{ p.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                         <div style="display:none;" class="text-stone-500 text-xs font-mono uppercase tracking-wider">NO PREVIEW</div>
                         {% else %}
                         <div class="text-stone-500 text-xs font-mono uppercase tracking-wider">NO PREVIEW</div>
                         {% endif %}
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-xs font-bold text-red-400">VIEW DISH 👁️</div>
                     </div>
-                    <h3 class="text-lg font-bold text-white mb-1 uppercase tracking-wide">{{ p.name }}</h3>
+                    <h3 onclick="openProductModal({{ p.id }})" class="text-lg font-bold text-white mb-1 uppercase tracking-wide cursor-pointer hover:text-red-400 transition">{{ p.name }}</h3>
                     <p class="text-xs text-stone-400 mb-4 line-clamp-2 leading-relaxed">{{ p.description or 'Cooked to order.' }}</p>
                 </div>
                 <div class="pt-4 border-t border-stone-800 flex justify-between items-center">
                     <span class="font-mono text-lg font-black text-red-400">{{ store.currency if store and store.currency else '₦' }}{{ "{:,.0f}".format(p.current_price) }}</span>
-                    <button type="button" onclick="openProductModal({{ p.id }})" class="bg-red-500 hover:bg-red-600 text-white font-black text-[10px] uppercase tracking-wider py-2.5 px-4 rounded-xl transition cursor-pointer">ORDER NOW</button>
+                    <!-- Quick Add Without Modal -->
+                    <button type="button" onclick="quickAddToCart({{ p.id }}, event)" class="bg-red-500 hover:bg-red-600 text-white font-black text-[10px] uppercase tracking-wider py-2.5 px-4 rounded-xl transition cursor-pointer">ADD TO BAG</button>
                 </div>
             </div>
             {% endfor %}
@@ -469,10 +599,8 @@ FALLBACK_TEMPLATE_URBAN = """<!DOCTYPE html>
 
 
 def get_curated_fallback_template(kiosk_name: str, bio: str, prompt: str) -> str:
-    """Selects the best archetype based on prompt/niche keywords, or rotates with a deterministic hash."""
     corpus = f"{kiosk_name} {bio} {prompt}".lower()
 
-    # Niche Keyword Router
     if any(k in corpus for k in ['perfume', 'scent', 'fragrance', 'luxury', 'gold', 'extrait', 'jewelry', 'boutique', 'watch']):
         print(f"🛡️ [FAILSAFE ROUTER] Selected 'Obsidian Luxury' template archetype for '{kiosk_name}'.", flush=True)
         return FALLBACK_TEMPLATE_LUXURY
@@ -481,7 +609,6 @@ def get_curated_fallback_template(kiosk_name: str, bio: str, prompt: str) -> str
         print(f"🛡️ [FAILSAFE ROUTER] Selected 'Urban Pulse' template archetype for '{kiosk_name}'.", flush=True)
         return FALLBACK_TEMPLATE_URBAN
 
-    # Deterministic Rotation Fallback
     idx = abs(hash(kiosk_name)) % 3
     fallbacks = [FALLBACK_TEMPLATE_MINIMAL, FALLBACK_TEMPLATE_LUXURY, FALLBACK_TEMPLATE_URBAN]
     print(f"🛡️ [FAILSAFE ROUTER] Selected Archetype #{idx} for '{kiosk_name}'.", flush=True)
@@ -500,12 +627,6 @@ def clean_html_fences(raw_text: str) -> str:
 
 
 def inject_bulletproof_chassis(html_content: str, kiosk_name: str = '', bio: str = '', meta_img: str = '') -> str:
-    """
-    1. Injects clean OpenGraph, Twitter, and SEO tags with correct absolute image priority.
-    2. Guarantees Tailwind CSS CDN in <head>.
-    3. Strips AI-written duplicate/dummy functions and modals.
-    4. Attaches GUARANTEED_CART_ENGINE right before </body>.
-    """
     safe_title = kiosk_name.strip() if kiosk_name else "{{ store.name }}"
     safe_desc = bio.strip().replace('"', '&quot;') if bio else "{{ store.bio or 'Explore our catalog on Marketplace' }}"
     safe_img = meta_img.strip() if meta_img else "{{ store.logo or store.hero_image or '' }}"
@@ -526,7 +647,6 @@ def inject_bulletproof_chassis(html_content: str, kiosk_name: str = '', bio: str
         f'    <meta name="twitter:image" content="{safe_img}">'
     )
 
-    # 1. Guarantee Head Meta & Tailwind
     if re.search(r'<head[^>]*>', html_content, re.IGNORECASE):
         html_content = re.sub(r'<title>.*?</title>', '', html_content, flags=re.IGNORECASE | re.DOTALL)
         html_content = re.sub(r'<meta\s+property=["\']og:[^>]+>', '', html_content, flags=re.IGNORECASE)
@@ -538,20 +658,15 @@ def inject_bulletproof_chassis(html_content: str, kiosk_name: str = '', bio: str
             injection += '\n    <script src="https://cdn.tailwindcss.com"></script>'
         html_content = re.sub(r'<head[^>]*>', injection, html_content, count=1, flags=re.IGNORECASE)
 
-    # 2. Strip broken empty <img> tags
     html_content = re.sub(r'<img[^>]+src=["\']\s*["\'][^>]*>', '', html_content, flags=re.IGNORECASE)
     html_content = re.sub(r'<img[^>]+src=["\'](None|null|undefined)["\'][^>]*>', '', html_content, flags=re.IGNORECASE)
-
-    # 3. Strip any broken/duplicate modals the AI attempted to create
     html_content = re.sub(r'<div id="productModal".*?</div>\s*</div>', '', html_content, flags=re.DOTALL | re.IGNORECASE)
     html_content = re.sub(r'<aside id="cartDrawer".*?</aside>', '', html_content, flags=re.DOTALL | re.IGNORECASE)
 
-    # 4. Strip dummy duplicate JS definitions that conflict with our engine
     html_content = re.sub(r'function\s+filterProducts\s*\([^)]*\)\s*\{[^}]*\}', '', html_content, flags=re.DOTALL)
     html_content = re.sub(r'function\s+toggleCart\s*\([^)]*\)\s*\{[^}]*\}', '', html_content, flags=re.DOTALL)
     html_content = re.sub(r'function\s+openProductModal\s*\([^)]*\)\s*\{[^}]*\}', '', html_content, flags=re.DOTALL)
 
-    # 5. Inject guaranteed cart engine
     if re.search(r'</body>', html_content, re.IGNORECASE):
         return re.sub(r'</body>', GUARANTEED_CART_ENGINE + '\n</body>', html_content, count=1, flags=re.IGNORECASE)
     return html_content + '\n' + GUARANTEED_CART_ENGINE
@@ -566,7 +681,6 @@ def query_openrouter(prompt_instruction: str, api_key: str) -> str:
         "X-Title": "Marketplace Kiosk Engine"
     }
 
-    # Reliable OpenRouter model
     model_name = os.environ.get('OPENROUTER_MODEL') or 'meta-llama/llama-3.3-70b-instruct'
 
     payload = {
@@ -591,11 +705,6 @@ def query_openrouter(prompt_instruction: str, api_key: str) -> str:
 # ==============================================================================
 
 def generate_kiosk_template(kiosk_name: str, bio: str, prompt: str, logo_url: str = '', hero_url: str = '', bg_url: str = '', currency: str = '₦') -> str:
-    """
-    Tier 1: Google Gemini (Primary Bespoke AI)
-    Tier 2: OpenRouter (Backup Bespoke AI)
-    Tier 3: Curated Design Archetype (Guaranteed 100% Fail-Safe)
-    """
     primary_meta_img = logo_url or hero_url or bg_url or ''
 
     system_instruction = (
@@ -615,34 +724,34 @@ def generate_kiosk_template(kiosk_name: str, bio: str, prompt: str, logo_url: st
         '   - Only render hero <img> if Hero asset is non-empty.\n'
         '3. HEADER & SEARCH:\n'
         '   - Top bar: Brand logo ("' + logo_url + '") and Name, an input calling oninput="filterProducts(this.value)", and a BAG button with onclick="toggleCart()" containing <span id="cartCountBadge">0</span>.\n'
-        '4. PRODUCTS LOOP (DATABASE MODEL ALIGNED):\n'
+        '4. PRODUCTS LOOP (IMAGE INSPECTS DETAILS, BUTTON ADDS DIRECTLY):\n'
         '   Iterate products using:\n'
         '   {% for p in regular_products %}\n'
         '   <div class="product-card" data-name="{{ p.name }}">\n'
-        '       <!-- ISOLATED IMAGE CONTAINER -->\n'
-        '       <div class="product-img-box w-full h-48 bg-stone-900 rounded-xl overflow-hidden mb-4 relative flex items-center justify-center border border-stone-800">\n'
+        '       <!-- CLICKING THE PICTURE OPENS FULL-SCREEN DETAIL OVERLAY -->\n'
+        '       <div onclick="openProductModal({{ p.id }})" class="product-img-box w-full h-48 bg-stone-900 rounded-xl overflow-hidden mb-4 relative flex items-center justify-center border border-stone-800 cursor-pointer group">\n'
         '           {% if p.image and p.image != "default_product.png" %}\n'
-        '               <img src="{{ p.image }}" alt="{{ p.name }}" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';" class="w-full h-full object-cover">\n'
+        '               <img src="{{ p.image }}" alt="{{ p.name }}" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">\n'
         '               <div style="display:none;" class="text-stone-500 text-xs font-mono uppercase tracking-wider">NO PREVIEW</div>\n'
         '           {% else %}\n'
         '               <div class="text-stone-500 text-xs font-mono uppercase tracking-wider">NO PREVIEW</div>\n'
         '           {% endif %}\n'
+        '           <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-xs font-bold text-white">DETAILS 👁️</div>\n'
         '       </div>\n'
-        '       <h3 class="text-lg font-bold text-white mb-1 uppercase tracking-wide">{{ p.name }}</h3>\n'
+        '       <h3 onclick="openProductModal({{ p.id }})" class="text-lg font-bold text-white mb-1 uppercase tracking-wide cursor-pointer hover:text-amber-400 transition">{{ p.name }}</h3>\n'
         '       <p class="text-xs text-stone-300 mb-4 line-clamp-2 leading-relaxed">{{ p.description or "Freshly prepared." }}</p>\n'
         '       <div class="pt-4 border-t border-stone-800 flex justify-between items-center">\n'
         '           <span class="font-mono text-lg font-black text-amber-400">{{ store.currency if store and store.currency else "₦" }}{{ "{:,.0f}".format(p.current_price) }}</span>\n'
-        '           <button type="button" onclick="openProductModal({{ p.id }})">ORDER NOW</button>\n'
+        '           <!-- BUTTON DIRECTLY ADDS TO BAG WITH TOAST (DOES NOT OPEN MODAL) -->\n'
+        '           <button type="button" onclick="quickAddToCart({{ p.id }}, event)">ADD TO BAG</button>\n'
         '       </div>\n'
         '   </div>\n'
         '   {% endfor %}\n'
-        '5. DO NOT write your own checkout drawer or modal scripts. The engine is automatically injected.\n'
+        '5. DO NOT write your own checkout drawer, modal, or toast scripts. The engine is automatically injected.\n'
         'Output ONLY pure valid HTML. No markdown backticks.'
     )
 
-    # -------------------------------------------------------------
-    # 1. Tier 1: Google Gemini (Primary)
-    # -------------------------------------------------------------
+    # 1. Primary: Google Gemini
     gemini_key = (os.environ.get('AI_API_KEY') or '').strip()
     if gemini_key:
         try:
@@ -666,9 +775,7 @@ def generate_kiosk_template(kiosk_name: str, bio: str, prompt: str, logo_url: st
         except Exception as e:
             print(f"⚠️ [AI BUILDER] Gemini Tier 1 notice: {e}", flush=True)
 
-    # -------------------------------------------------------------
-    # 2. Tier 2: OpenRouter (Backup AI)
-    # -------------------------------------------------------------
+    # 2. Backup: OpenRouter
     openrouter_key = (os.environ.get('OPENROUTER_API_KEY') or '').strip()
     if openrouter_key:
         try:
@@ -681,9 +788,7 @@ def generate_kiosk_template(kiosk_name: str, bio: str, prompt: str, logo_url: st
         except Exception as e:
             print(f"⚠️ [AI BUILDER] OpenRouter Tier 2 notice: {e}", flush=True)
 
-    # -------------------------------------------------------------
     # 3. Tier 3: Curated Design Archetype (Guaranteed 100% Fail-Safe)
-    # -------------------------------------------------------------
     print(f"🛡️ [AI BUILDER] Activating Curated Design Archetype fallback for '{kiosk_name}'.", flush=True)
     fallback_html = get_curated_fallback_template(kiosk_name, bio, prompt)
     return inject_bulletproof_chassis(fallback_html, kiosk_name, bio, primary_meta_img)

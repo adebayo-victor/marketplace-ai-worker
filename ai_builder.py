@@ -57,16 +57,38 @@ GUARANTEED_CART_ENGINE = """
 
 <script>
     window.KIOSK_PRODUCTS = {
-        {% for p in regular_products + flash_sales %}
-        "{{ p.id }}": {
-            "id": {{ p.id }},
-            "name": {{ p.name|tojson }},
-            "price": {{ p.current_price }},
-            "description": {{ p.description|tojson }},
-            "attributes": {{ p.get_attributes()|tojson }}
-        },
+        {% for p in regular_products %}
+            <div class="product-card bg-[#181a24] border border-stone-800 rounded-2xl p-5 flex flex-col justify-between hover:border-amber-400/40 transition shadow-xl" data-name="{{ p.name }}">
+                <div>
+                    <!-- Image Box (Isolated so onerror NEVER wipes out the text/button) -->
+                    <div class="w-full h-48 bg-stone-900 rounded-xl overflow-hidden mb-4 relative flex items-center justify-center border border-stone-800">
+                        {% if p.image and p.image != 'default_product.png' %}
+                            <img src="{{ p.image }}" 
+                                 alt="{{ p.name }}" 
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" 
+                                 class="w-full h-full object-cover">
+                            <div style="display:none;" class="text-stone-500 text-xs font-mono uppercase tracking-wider">NO PREVIEW</div>
+                        {% else %}
+                            <div class="text-stone-500 text-xs font-mono uppercase tracking-wider">NO PREVIEW</div>
+                        {% endif %}
+                    </div>
+            
+                    <h3 class="text-lg font-bold text-white mb-1 uppercase tracking-wide">{{ p.name }}</h3>
+                    <p class="text-xs text-stone-400 mb-4 line-clamp-2 leading-relaxed">{{ p.description or 'Freshly prepared.' }}</p>
+                </div>
+            
+                <div class="pt-4 border-t border-stone-800 flex justify-between items-center">
+                    <span class="font-mono text-lg font-black text-amber-400">
+                        ₦{{ "{:,.0f}".format(p.current_price) }}
+                    </span>
+                    <button type="button" 
+                            onclick="openProductModal({{ p.id }})" 
+                            class="bg-amber-400 hover:bg-amber-300 text-black font-black text-[10px] uppercase tracking-wider py-2.5 px-4 rounded-xl transition cursor-pointer">
+                        ORDER NOW
+                    </button>
+                </div>
+            </div>
         {% endfor %}
-    };
 </script>
 
 <div id="productModal">

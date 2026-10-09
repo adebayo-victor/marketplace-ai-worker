@@ -65,7 +65,7 @@ def build_endpoint():
 
     # Execute asynchronously in background thread (Render will NOT kill this thread!)
     thread = threading.Thread(target=run_ai_task, args=(job,))
-    thread.daemon = True
+    thread.daemon = False
     thread.start()
 
     return jsonify({

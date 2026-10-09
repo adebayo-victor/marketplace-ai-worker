@@ -369,7 +369,7 @@ GUARANTEED_CART_ENGINE = """
 
 
 # ==============================================================================
-# 🎨 3 VERSATILE, CURATED FALLBACK TEMPLATES (WITH FLASH SALES & ADS)
+# 🎨 3 VERSATILE, CURATED FALLBACK TEMPLATES (BILLBOARD ADS + FLASH DROPS)
 # ==============================================================================
 
 FALLBACK_TEMPLATE_LUXURY = """<!DOCTYPE html>
@@ -414,6 +414,20 @@ FALLBACK_TEMPLATE_LUXURY = """<!DOCTYPE html>
     </section>
     {% endif %}
 
+    <!-- 📢 PROMOTIONAL BILLBOARD ADS (FULL-WIDTH WITH "AD" BADGE) -->
+    {% if ad_slots and (not store or store.is_section_active('ads')) %}
+        {% for ad in ad_slots %}
+            {% if ad.is_active and ad.banner_image %}
+            <div class="my-6 px-4 md:px-6 max-w-6xl mx-auto w-full">
+                <a href="{{ ad.target_link or '#' }}" {% if ad.target_link %}target="_blank"{% endif %} class="relative block w-full overflow-hidden rounded-2xl border border-stone-800 shadow-xl group">
+                    <img src="{{ ad.banner_image }}" alt="Promotion" class="w-full h-32 sm:h-44 md:h-52 object-cover group-hover:scale-[1.01] transition duration-300">
+                    <span class="absolute top-2.5 right-2.5 bg-black/75 backdrop-blur-md text-white text-[9px] font-mono font-bold tracking-widest px-2 py-0.5 rounded shadow">AD</span>
+                </a>
+            </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
     <!-- ⚡ FLASH SALES SECTION -->
     {% if flash_sales and (not store or store.is_section_active('flash_sales')) %}
     <section id="flash-sales" class="bg-gradient-to-b from-amber-500/10 to-transparent border-y border-amber-500/20 py-12 px-4 md:px-6">
@@ -436,6 +450,7 @@ FALLBACK_TEMPLATE_LUXURY = """<!DOCTYPE html>
                             {% else %}
                             <div class="text-stone-500 text-xs font-mono uppercase">NO PREVIEW</div>
                             {% endif %}
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-xs font-bold text-amber-300">VIEW DETAILS 👁️</div>
                         </div>
                         <h3 onclick="openProductModal({{ p.id }})" class="text-lg font-bold text-white mb-1 uppercase tracking-wide font-serif cursor-pointer hover:text-amber-400 transition">{{ p.name }}</h3>
                         <p class="text-xs text-stone-400 mb-4 line-clamp-2 leading-relaxed">{{ p.description }}</p>
@@ -452,21 +467,6 @@ FALLBACK_TEMPLATE_LUXURY = """<!DOCTYPE html>
                 </div>
                 {% endfor %}
             </div>
-        </div>
-    </section>
-    {% endif %}
-
-    <!-- 📢 SPONSORED BANNER ADS -->
-    {% if ad_slots and (not store or store.is_section_active('ads')) %}
-    <section class="container mx-auto px-4 py-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {% for ad in ad_slots %}
-                {% if ad.is_active and ad.banner_image %}
-                <a href="{{ ad.target_link or '#' }}" target="_blank" class="block overflow-hidden rounded-2xl border border-stone-800 hover:border-amber-400/50 transition">
-                    <img src="{{ ad.banner_image }}" alt="Promotion" class="w-full h-32 md:h-40 object-cover">
-                </a>
-                {% endif %}
-            {% endfor %}
         </div>
     </section>
     {% endif %}
@@ -547,6 +547,20 @@ FALLBACK_TEMPLATE_MINIMAL = """<!DOCTYPE html>
             <p class="text-stone-300 text-sm md:text-base max-w-xl leading-relaxed">{{ store.bio if store else 'Welcome to our verified direct marketplace store.' }}</p>
         </div>
     </section>
+    {% endif %}
+
+    <!-- 📢 PROMOTIONAL BILLBOARD ADS (FULL-WIDTH WITH "AD" BADGE) -->
+    {% if ad_slots and (not store or store.is_section_active('ads')) %}
+        {% for ad in ad_slots %}
+            {% if ad.is_active and ad.banner_image %}
+            <div class="my-6 px-6 max-w-5xl mx-auto w-full">
+                <a href="{{ ad.target_link or '#' }}" {% if ad.target_link %}target="_blank"{% endif %} class="relative block w-full overflow-hidden rounded-xl border border-stone-800 shadow-md group">
+                    <img src="{{ ad.banner_image }}" alt="Promotion" class="w-full h-32 sm:h-44 object-cover group-hover:scale-[1.01] transition duration-300">
+                    <span class="absolute top-2.5 right-2.5 bg-black/75 backdrop-blur-md text-white text-[9px] font-mono font-bold tracking-widest px-2 py-0.5 rounded shadow">AD</span>
+                </a>
+            </div>
+            {% endif %}
+        {% endfor %}
     {% endif %}
 
     <!-- ⚡ FLASH SALES -->
@@ -658,6 +672,20 @@ FALLBACK_TEMPLATE_URBAN = """<!DOCTYPE html>
             <a href="#products-grid" class="inline-block bg-red-500 hover:bg-red-600 text-white font-black text-xs uppercase tracking-widest px-8 py-3.5 rounded-xl transition shadow-lg">EXPLORE MENU &darr;</a>
         </div>
     </section>
+    {% endif %}
+
+    <!-- 📢 PROMOTIONAL BILLBOARD ADS (FULL-WIDTH WITH "AD" BADGE) -->
+    {% if ad_slots and (not store or store.is_section_active('ads')) %}
+        {% for ad in ad_slots %}
+            {% if ad.is_active and ad.banner_image %}
+            <div class="my-6 px-4 md:px-6 max-w-6xl mx-auto w-full">
+                <a href="{{ ad.target_link or '#' }}" {% if ad.target_link %}target="_blank"{% endif %} class="relative block w-full overflow-hidden rounded-2xl border border-stone-800 shadow-xl group">
+                    <img src="{{ ad.banner_image }}" alt="Promotion" class="w-full h-32 sm:h-44 md:h-52 object-cover group-hover:scale-[1.01] transition duration-300">
+                    <span class="absolute top-2.5 right-2.5 bg-black/75 backdrop-blur-md text-white text-[9px] font-mono font-bold tracking-widest px-2 py-0.5 rounded shadow">AD</span>
+                </a>
+            </div>
+            {% endif %}
+        {% endfor %}
     {% endif %}
 
     <!-- ⚡ FLASH SALE -->
@@ -859,7 +887,21 @@ def generate_kiosk_template(kiosk_name: str, bio: str, prompt: str, logo_url: st
         'CRITICAL JINJA2 VARIABLES & ARCHITECTURE:\n'
         '1. IN <head>: Include Google Fonts matching niche & <script src="https://cdn.tailwindcss.com"></script>.\n'
         '2. HERO SECTION: Wrap in: {% if not store or store.is_section_active("hero") %} ... {% endif %}\n'
-        '3. ⚡ FLASH SALES SECTION (CRITICAL REQUIREMENT):\n'
+        '3. 📢 PROMOTIONAL BILLBOARD BANNER ADS (FULL-WIDTH WITH "AD" BADGE):\n'
+        '   Do NOT put ads in cramped multi-column grids! Render each active ad as a wide horizontal billboard:\n'
+        '   {% if ad_slots and (not store or store.is_section_active("ads")) %}\n'
+        '       {% for ad in ad_slots %}\n'
+        '           {% if ad.is_active and ad.banner_image %}\n'
+        '           <div class="my-6 px-4 md:px-6 max-w-6xl mx-auto w-full">\n'
+        '               <a href="{{ ad.target_link or "#" }}" target="_blank" class="relative block w-full overflow-hidden rounded-2xl border border-stone-800 shadow-xl group">\n'
+        '                   <img src="{{ ad.banner_image }}" class="w-full h-32 sm:h-44 md:h-52 object-cover group-hover:scale-[1.01] transition duration-300">\n'
+        '                   <span class="absolute top-2.5 right-2.5 bg-black/75 backdrop-blur-md text-white text-[9px] font-mono font-bold tracking-widest px-2 py-0.5 rounded shadow">AD</span>\n'
+        '               </a>\n'
+        '           </div>\n'
+        '           {% endif %}\n'
+        '       {% endfor %}\n'
+        '   {% endif %}\n'
+        '4. ⚡ FLASH SALES SECTION (CRITICAL REQUIREMENT):\n'
         '   You MUST include this exact Jinja section for limited-time flash sales:\n'
         '   {% if flash_sales and (not store or store.is_section_active("flash_sales")) %}\n'
         '   <section id="flash-sales" class="my-12 ...">\n'
@@ -868,10 +910,11 @@ def generate_kiosk_template(kiosk_name: str, bio: str, prompt: str, logo_url: st
         '       <div class="grid ...">\n'
         '           {% for p in flash_sales %}\n'
         '           <div class="product-card" data-name="{{ p.name }}">\n'
-        '               <div onclick="openProductModal({{ p.id }})" class="cursor-pointer">\n'
+        '               <!-- CLICKING PICTURE OPENS FULL DETAIL MODAL -->\n'
+        '               <div onclick="openProductModal({{ p.id }})" class="cursor-pointer ...">\n'
         '                   <img src="{{ p.image }}" alt="{{ p.name }}" onerror="this.style.display=\'none\';">\n'
         '               </div>\n'
-        '               <h3>{{ p.name }}</h3>\n'
+        '               <h3 onclick="openProductModal({{ p.id }})" class="cursor-pointer">{{ p.name }}</h3>\n'
         '               <p>{{ p.description }}</p>\n'
         '               <div>\n'
         '                   {% if p.has_discount %}\n'
@@ -879,26 +922,17 @@ def generate_kiosk_template(kiosk_name: str, bio: str, prompt: str, logo_url: st
         '                   {% endif %}\n'
         '                   <span class="font-bold text-amber-500">{{ store.currency }}{{ "{:,.0f}".format(p.current_price) }}</span>\n'
         '               </div>\n'
+        '               <!-- BUTTON ADDS DIRECTLY WITH TOAST -->\n'
         '               <button type="button" onclick="quickAddToCart({{ p.id }}, event)">ADD TO BAG</button>\n'
         '           </div>\n'
         '           {% endfor %}\n'
         '       </div>\n'
         '   </section>\n'
         '   {% endif %}\n'
-        '4. 📢 PROMOTIONAL BANNER ADS:\n'
-        '   {% if ad_slots and (not store or store.is_section_active("ads")) %}\n'
-        '   <section class="ad-banners my-8 ...">\n'
-        '       {% for ad in ad_slots %}\n'
-        '           {% if ad.is_active and ad.banner_image %}\n'
-        '           <a href="{{ ad.target_link or "#" }}" target="_blank"><img src="{{ ad.banner_image }}"></a>\n'
-        '           {% endif %}\n'
-        '       {% endfor %}\n'
-        '   </section>\n'
-        '   {% endif %}\n'
         '5. MAIN PRODUCTS CATALOG:\n'
         '   Iterate regular items using: {% for p in regular_products %}\n'
         '   <div class="product-card" data-name="{{ p.name }}">\n'
-        '       <!-- CLICKING PICTURE OPENS FULL-SCREEN DETAIL MODAL -->\n'
+        '       <!-- CLICKING PICTURE OPENS FULL DETAIL MODAL -->\n'
         '       <div onclick="openProductModal({{ p.id }})" class="cursor-pointer ...">\n'
         '           <img src="{{ p.image }}" alt="{{ p.name }}" onerror="this.style.display=\'none\';">\n'
         '       </div>\n'

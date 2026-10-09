@@ -64,7 +64,9 @@ def build_endpoint():
         return jsonify({"status": "error", "message": "Missing kiosk_id or callback_url"}), 400
 
     # Execute asynchronously in background thread (Render will NOT kill this thread!)
-    run_ai_task
+    thread = threading.Thread(target=run_ai_task, args=(job,))
+    thread.daemon = True
+    thread.start()
 
     return jsonify({
         "status": "accepted",

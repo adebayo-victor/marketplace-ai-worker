@@ -4,7 +4,7 @@ import json
 import urllib.request
 import urllib.error
 
-# 🛡️ THE BULLETPROOF INTERACTIVE ENGINE (MODAL INSPECTION + INSTANT TOAST ADD-TO-BAG)
+# 🛡️ THE BULLETPROOF INTERACTIVE ENGINE (MODAL INSPECTION + TOAST + CHECKOUT)
 GUARANTEED_CART_ENGINE = """
 <!-- ======================================================== -->
 <!-- BULLETPROOF DETAIL MODAL, TOAST & WHATSAPP CHECKOUT ENGINE -->
@@ -111,7 +111,7 @@ GUARANTEED_CART_ENGINE = """
     };
 </script>
 
-<!-- High-Impact Product Inspection & Specs Overlay -->
+<!-- Product Specs & Detail Modal -->
 <div id="productModal" onclick="if(event.target === this) closeProductModal();">
     <div class="bg-[#14161f] border border-stone-800 max-w-xl w-full rounded-3xl shadow-2xl relative text-white overflow-hidden flex flex-col md:flex-row max-h-[90vh]">
         <button type="button" onclick="closeProductModal()" class="absolute top-4 right-4 z-10 bg-black/60 hover:bg-black text-stone-300 hover:text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg cursor-pointer transition">&times;</button>
@@ -180,7 +180,6 @@ GUARANTEED_CART_ENGINE = """
     let currentModalProduct = null;
     let toastTimeout = null;
 
-    // Toast Notification Dispatcher
     function showCartToast(message) {
         const toast = document.getElementById('cartToast');
         const msgEl = document.getElementById('cartToastMsg');
@@ -195,7 +194,6 @@ GUARANTEED_CART_ENGINE = """
         }, 2500);
     }
 
-    // ⚡ INSTANT DIRECT ADD-TO-BAG (NO MODAL, NO FORCED DRAWER)
     function quickAddToCart(productId, event) {
         if (event) {
             event.preventDefault();
@@ -205,7 +203,6 @@ GUARANTEED_CART_ENGINE = """
         const product = window.KIOSK_PRODUCTS[productId];
         if (!product) return;
 
-        // Check if existing item in cart
         const existing = cart.find(item => item.product_id === product.id && !item.variants);
         if (existing) {
             existing.quantity += 1;
@@ -223,7 +220,6 @@ GUARANTEED_CART_ENGINE = """
         showCartToast(`Added ${product.name} to bag!`);
     }
 
-    // 🔍 FULL PICTURE & DETAIL INSPECTION MODAL (CALLED BY CLICKING PICTURE/CARD)
     function openProductModal(productId) {
         const product = window.KIOSK_PRODUCTS[productId];
         if (!product) return;
@@ -233,7 +229,6 @@ GUARANTEED_CART_ENGINE = """
         document.getElementById('modalProductDesc').innerText = product.description || 'Premium curated quality.';
         document.getElementById('modalProductPrice').innerText = `${storeCurrency}${Number(product.price).toLocaleString()}`;
         
-        // Handle Picture
         const imgEl = document.getElementById('modalProductImg');
         const placeholderEl = document.getElementById('modalImgPlaceholder');
         if (product.image && product.image !== 'default_product.png') {
@@ -249,7 +244,6 @@ GUARANTEED_CART_ENGINE = """
             placeholderEl.style.display = 'block';
         }
 
-        // Handle Variants
         const container = document.getElementById('modalVariantsContainer');
         container.innerHTML = '';
         const attrs = product.attributes || {};
@@ -275,7 +269,6 @@ GUARANTEED_CART_ENGINE = """
         currentModalProduct = null;
     }
 
-    // Add To Bag from inside Modal
     function confirmAddToCartFromModal() {
         if (!currentModalProduct) return;
         const selected = [];
@@ -376,7 +369,7 @@ GUARANTEED_CART_ENGINE = """
 
 
 # ==============================================================================
-# 🎨 3 VERSATILE, CURATED FALLBACK TEMPLATES (NEVER RETURN AN EMPTY PAGE)
+# 🎨 3 VERSATILE, CURATED FALLBACK TEMPLATES (WITH FLASH SALES & ADS)
 # ==============================================================================
 
 FALLBACK_TEMPLATE_LUXURY = """<!DOCTYPE html>
@@ -408,6 +401,7 @@ FALLBACK_TEMPLATE_LUXURY = """<!DOCTYPE html>
         </div>
     </header>
 
+    {% if not store or store.is_section_active('hero') %}
     <section class="relative min-h-[55vh] flex items-center justify-center overflow-hidden bg-black px-4 py-16">
         <div class="relative z-10 max-w-2xl w-full bg-[#111218]/85 backdrop-blur-xl border border-stone-800/80 p-8 md:p-12 rounded-3xl text-center shadow-2xl">
             <span class="inline-block text-[11px] font-mono tracking-widest text-amber-400 uppercase bg-amber-400/10 border border-amber-400/20 px-3.5 py-1 rounded-full mb-4">
@@ -418,6 +412,64 @@ FALLBACK_TEMPLATE_LUXURY = """<!DOCTYPE html>
             <a href="#products-grid" class="inline-block bg-amber-400 hover:bg-amber-300 text-black font-black text-xs uppercase tracking-widest px-8 py-3.5 rounded-xl transition shadow-lg">EXPLORE CATALOG &darr;</a>
         </div>
     </section>
+    {% endif %}
+
+    <!-- ⚡ FLASH SALES SECTION -->
+    {% if flash_sales and (not store or store.is_section_active('flash_sales')) %}
+    <section id="flash-sales" class="bg-gradient-to-b from-amber-500/10 to-transparent border-y border-amber-500/20 py-12 px-4 md:px-6">
+        <div class="container mx-auto">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <span class="text-[10px] font-mono tracking-widest text-amber-400 uppercase bg-amber-400/10 border border-amber-400/20 px-3 py-1 rounded-full inline-block mb-2">⚡ LIMITED FLASH DROPS</span>
+                    <h2 class="text-2xl md:text-3xl font-black font-serif text-white">Exclusive Offers</h2>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {% for p in flash_sales %}
+                <div class="product-card bg-[#14161f] border border-amber-500/40 rounded-2xl p-5 flex flex-col justify-between shadow-2xl relative" data-name="{{ p.name }}">
+                    <span class="absolute top-3 left-3 z-10 bg-amber-400 text-black text-[10px] font-black uppercase px-2 py-0.5 rounded-md shadow">⚡ FLASH DEAL</span>
+                    <div>
+                        <div onclick="openProductModal({{ p.id }})" class="w-full h-48 bg-stone-900 rounded-xl overflow-hidden mb-4 relative flex items-center justify-center border border-stone-800 cursor-pointer group">
+                            {% if p.image and p.image != 'default_product.png' %}
+                            <img src="{{ p.image }}" alt="{{ p.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            <div style="display:none;" class="text-stone-500 text-xs font-mono uppercase">NO PREVIEW</div>
+                            {% else %}
+                            <div class="text-stone-500 text-xs font-mono uppercase">NO PREVIEW</div>
+                            {% endif %}
+                        </div>
+                        <h3 onclick="openProductModal({{ p.id }})" class="text-lg font-bold text-white mb-1 uppercase tracking-wide font-serif cursor-pointer hover:text-amber-400 transition">{{ p.name }}</h3>
+                        <p class="text-xs text-stone-400 mb-4 line-clamp-2 leading-relaxed">{{ p.description }}</p>
+                    </div>
+                    <div class="pt-4 border-t border-stone-800 flex justify-between items-center">
+                        <div>
+                            {% if p.has_discount %}
+                            <span class="line-through text-stone-500 text-xs font-mono block">{{ store.currency if store else '₦' }}{{ "{:,.0f}".format(p.original_price) }}</span>
+                            {% endif %}
+                            <span class="font-mono text-lg font-black text-amber-400">{{ store.currency if store else '₦' }}{{ "{:,.0f}".format(p.current_price) }}</span>
+                        </div>
+                        <button type="button" onclick="quickAddToCart({{ p.id }}, event)" class="bg-amber-400 hover:bg-amber-300 text-black font-black text-[10px] uppercase tracking-wider py-2.5 px-4 rounded-xl transition cursor-pointer">ADD TO BAG</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- 📢 SPONSORED BANNER ADS -->
+    {% if ad_slots and (not store or store.is_section_active('ads')) %}
+    <section class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {% for ad in ad_slots %}
+                {% if ad.is_active and ad.banner_image %}
+                <a href="{{ ad.target_link or '#' }}" target="_blank" class="block overflow-hidden rounded-2xl border border-stone-800 hover:border-amber-400/50 transition">
+                    <img src="{{ ad.banner_image }}" alt="Promotion" class="w-full h-32 md:h-40 object-cover">
+                </a>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
 
     <main id="products-grid" class="container mx-auto py-16 px-4 md:px-6 flex-grow">
         <div class="text-center max-w-xl mx-auto mb-10">
@@ -428,7 +480,6 @@ FALLBACK_TEMPLATE_LUXURY = """<!DOCTYPE html>
             {% for p in regular_products %}
             <div class="product-card bg-[#14161f] border border-stone-800/90 rounded-2xl p-5 flex flex-col justify-between hover:border-amber-400/40 transition shadow-xl" data-name="{{ p.name }}">
                 <div>
-                    <!-- Click Picture To Inspect in Modal -->
                     <div onclick="openProductModal({{ p.id }})" class="w-full h-48 bg-stone-900 rounded-xl overflow-hidden mb-4 relative flex items-center justify-center border border-stone-800 cursor-pointer group">
                         {% if p.image and p.image != 'default_product.png' %}
                         <img src="{{ p.image }}" alt="{{ p.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
@@ -443,8 +494,12 @@ FALLBACK_TEMPLATE_LUXURY = """<!DOCTYPE html>
                     <p class="text-xs text-stone-400 mb-4 line-clamp-2 leading-relaxed">{{ p.description or 'Artisanal formulation.' }}</p>
                 </div>
                 <div class="pt-4 border-t border-stone-800 flex justify-between items-center">
-                    <span class="font-mono text-lg font-black text-amber-400">{{ store.currency if store and store.currency else '₦' }}{{ "{:,.0f}".format(p.current_price) }}</span>
-                    <!-- Quick Add Without Modal -->
+                    <div>
+                        {% if p.has_discount %}
+                        <span class="line-through text-stone-500 text-xs font-mono block">{{ store.currency if store else '₦' }}{{ "{:,.0f}".format(p.original_price) }}</span>
+                        {% endif %}
+                        <span class="font-mono text-lg font-black text-amber-400">{{ store.currency if store else '₦' }}{{ "{:,.0f}".format(p.current_price) }}</span>
+                    </div>
                     <button type="button" onclick="quickAddToCart({{ p.id }}, event)" class="bg-amber-400 hover:bg-amber-300 text-black font-black text-[10px] uppercase tracking-wider py-2.5 px-4 rounded-xl transition cursor-pointer">ADD TO BAG</button>
                 </div>
             </div>
@@ -484,6 +539,7 @@ FALLBACK_TEMPLATE_MINIMAL = """<!DOCTYPE html>
         </div>
     </header>
 
+    {% if not store or store.is_section_active('hero') %}
     <section class="border-b border-stone-800/80 px-6 py-16 bg-[#0f1118]">
         <div class="container mx-auto max-w-4xl text-left">
             <span class="text-xs font-mono uppercase tracking-widest text-emerald-400 block mb-2">⚡ VERIFIED DIRECT CATALOG</span>
@@ -491,13 +547,51 @@ FALLBACK_TEMPLATE_MINIMAL = """<!DOCTYPE html>
             <p class="text-stone-300 text-sm md:text-base max-w-xl leading-relaxed">{{ store.bio if store else 'Welcome to our verified direct marketplace store.' }}</p>
         </div>
     </section>
+    {% endif %}
+
+    <!-- ⚡ FLASH SALES -->
+    {% if flash_sales and (not store or store.is_section_active('flash_sales')) %}
+    <section class="bg-[#12141e] border-b border-stone-800 py-10 px-6">
+        <div class="container mx-auto">
+            <h2 class="text-xl font-bold uppercase tracking-wider text-emerald-400 mb-6 flex items-center gap-2">
+                <span>⚡ FLASH SALE // LIMITED TIME</span>
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {% for p in flash_sales %}
+                <div class="product-card bg-[#0e1017] border border-emerald-500/30 rounded-xl p-4 flex flex-col justify-between" data-name="{{ p.name }}">
+                    <div>
+                        <div onclick="openProductModal({{ p.id }})" class="w-full h-44 bg-stone-900 rounded-lg overflow-hidden mb-3 relative flex items-center justify-center border border-stone-800 cursor-pointer">
+                            {% if p.image and p.image != 'default_product.png' %}
+                            <img src="{{ p.image }}" alt="{{ p.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-full h-full object-cover">
+                            <div style="display:none;" class="text-stone-500 text-xs font-mono uppercase">NO PREVIEW</div>
+                            {% else %}
+                            <div class="text-stone-500 text-xs font-mono uppercase">NO PREVIEW</div>
+                            {% endif %}
+                        </div>
+                        <h3 onclick="openProductModal({{ p.id }})" class="text-base font-bold text-white mb-1 tracking-tight cursor-pointer">{{ p.name }}</h3>
+                        <p class="text-xs text-stone-400 mb-3 line-clamp-2">{{ p.description }}</p>
+                    </div>
+                    <div class="pt-3 border-t border-stone-800 flex justify-between items-center">
+                        <div>
+                            {% if p.has_discount %}
+                            <span class="line-through text-stone-500 text-xs font-mono block">{{ store.currency if store else '₦' }}{{ "{:,.0f}".format(p.original_price) }}</span>
+                            {% endif %}
+                            <span class="font-mono text-base font-bold text-emerald-400">{{ store.currency if store else '₦' }}{{ "{:,.0f}".format(p.current_price) }}</span>
+                        </div>
+                        <button type="button" onclick="quickAddToCart({{ p.id }}, event)" class="bg-emerald-400 hover:bg-emerald-300 text-black font-black text-[10px] uppercase tracking-wider py-2 px-3 rounded-lg transition cursor-pointer">ADD TO BAG</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
 
     <main id="products-grid" class="container mx-auto py-12 px-6 flex-grow">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {% for p in regular_products %}
             <div class="product-card bg-[#11131a] border border-stone-800/80 rounded-xl p-4 flex flex-col justify-between hover:border-stone-600 transition" data-name="{{ p.name }}">
                 <div>
-                    <!-- Click Picture To Inspect -->
                     <div onclick="openProductModal({{ p.id }})" class="w-full h-44 bg-stone-900 rounded-lg overflow-hidden mb-3 relative flex items-center justify-center border border-stone-800 cursor-pointer group">
                         {% if p.image and p.image != 'default_product.png' %}
                         <img src="{{ p.image }}" alt="{{ p.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
@@ -511,8 +605,12 @@ FALLBACK_TEMPLATE_MINIMAL = """<!DOCTYPE html>
                     <p class="text-xs text-stone-400 mb-3 line-clamp-2">{{ p.description or 'In-stock item.' }}</p>
                 </div>
                 <div class="pt-3 border-t border-stone-800 flex justify-between items-center">
-                    <span class="font-mono text-base font-bold text-white">{{ store.currency if store and store.currency else '₦' }}{{ "{:,.0f}".format(p.current_price) }}</span>
-                    <!-- Quick Add Without Modal -->
+                    <div>
+                        {% if p.has_discount %}
+                        <span class="line-through text-stone-500 text-xs font-mono block">{{ store.currency if store else '₦' }}{{ "{:,.0f}".format(p.original_price) }}</span>
+                        {% endif %}
+                        <span class="font-mono text-base font-bold text-white">{{ store.currency if store else '₦' }}{{ "{:,.0f}".format(p.current_price) }}</span>
+                    </div>
                     <button type="button" onclick="quickAddToCart({{ p.id }}, event)" class="bg-white hover:bg-stone-200 text-black font-black text-[10px] uppercase tracking-wider py-2 px-3 rounded-lg transition cursor-pointer">ADD TO BAG</button>
                 </div>
             </div>
@@ -549,6 +647,7 @@ FALLBACK_TEMPLATE_URBAN = """<!DOCTYPE html>
         </div>
     </header>
 
+    {% if not store or store.is_section_active('hero') %}
     <section class="relative min-h-[50vh] flex items-center justify-center overflow-hidden bg-black px-4 py-16">
         <div class="relative z-10 max-w-2xl w-full bg-[#181a24]/90 backdrop-blur-xl border border-stone-800 p-8 md:p-12 rounded-3xl text-center shadow-2xl">
             <span class="inline-block text-[11px] font-mono tracking-widest text-red-400 uppercase bg-red-500/10 border border-red-500/20 px-3.5 py-1 rounded-full mb-4">
@@ -559,6 +658,45 @@ FALLBACK_TEMPLATE_URBAN = """<!DOCTYPE html>
             <a href="#products-grid" class="inline-block bg-red-500 hover:bg-red-600 text-white font-black text-xs uppercase tracking-widest px-8 py-3.5 rounded-xl transition shadow-lg">EXPLORE MENU &darr;</a>
         </div>
     </section>
+    {% endif %}
+
+    <!-- ⚡ FLASH SALE -->
+    {% if flash_sales and (not store or store.is_section_active('flash_sales')) %}
+    <section class="bg-red-950/20 border-y border-red-500/30 py-10 px-6">
+        <div class="container mx-auto">
+            <h2 class="text-2xl font-black text-white uppercase tracking-tight mb-6 flex items-center gap-2">
+                <span class="text-red-500">🔥 FLASH DEALS</span>
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {% for p in flash_sales %}
+                <div class="product-card bg-[#181a24] border border-red-500/40 rounded-2xl p-5 flex flex-col justify-between" data-name="{{ p.name }}">
+                    <div>
+                        <div onclick="openProductModal({{ p.id }})" class="w-full h-48 bg-stone-900 rounded-xl overflow-hidden mb-4 relative flex items-center justify-center border border-stone-800 cursor-pointer">
+                            {% if p.image and p.image != 'default_product.png' %}
+                            <img src="{{ p.image }}" alt="{{ p.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-full h-full object-cover">
+                            <div style="display:none;" class="text-stone-500 text-xs font-mono uppercase">NO PREVIEW</div>
+                            {% else %}
+                            <div class="text-stone-500 text-xs font-mono uppercase">NO PREVIEW</div>
+                            {% endif %}
+                        </div>
+                        <h3 onclick="openProductModal({{ p.id }})" class="text-lg font-bold text-white mb-1 uppercase tracking-wide cursor-pointer">{{ p.name }}</h3>
+                        <p class="text-xs text-stone-400 mb-4 line-clamp-2 leading-relaxed">{{ p.description }}</p>
+                    </div>
+                    <div class="pt-4 border-t border-stone-800 flex justify-between items-center">
+                        <div>
+                            {% if p.has_discount %}
+                            <span class="line-through text-stone-500 text-xs font-mono block">{{ store.currency if store else '₦' }}{{ "{:,.0f}".format(p.original_price) }}</span>
+                            {% endif %}
+                            <span class="font-mono text-lg font-black text-red-400">{{ store.currency if store else '₦' }}{{ "{:,.0f}".format(p.current_price) }}</span>
+                        </div>
+                        <button type="button" onclick="quickAddToCart({{ p.id }}, event)" class="bg-red-500 hover:bg-red-600 text-white font-black text-[10px] uppercase tracking-wider py-2.5 px-4 rounded-xl transition cursor-pointer">ADD TO BAG</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
 
     <main id="products-grid" class="container mx-auto py-16 px-4 md:px-6 flex-grow">
         <div class="text-center max-w-xl mx-auto mb-10">
@@ -568,7 +706,6 @@ FALLBACK_TEMPLATE_URBAN = """<!DOCTYPE html>
             {% for p in regular_products %}
             <div class="product-card bg-[#181a24] border border-stone-800 rounded-2xl p-5 flex flex-col justify-between hover:border-red-500/50 transition shadow-xl" data-name="{{ p.name }}">
                 <div>
-                    <!-- Click Picture To Inspect -->
                     <div onclick="openProductModal({{ p.id }})" class="w-full h-48 bg-stone-900 rounded-xl overflow-hidden mb-4 relative flex items-center justify-center border border-stone-800 cursor-pointer group">
                         {% if p.image and p.image != 'default_product.png' %}
                         <img src="{{ p.image }}" alt="{{ p.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
@@ -582,8 +719,12 @@ FALLBACK_TEMPLATE_URBAN = """<!DOCTYPE html>
                     <p class="text-xs text-stone-400 mb-4 line-clamp-2 leading-relaxed">{{ p.description or 'Cooked to order.' }}</p>
                 </div>
                 <div class="pt-4 border-t border-stone-800 flex justify-between items-center">
-                    <span class="font-mono text-lg font-black text-red-400">{{ store.currency if store and store.currency else '₦' }}{{ "{:,.0f}".format(p.current_price) }}</span>
-                    <!-- Quick Add Without Modal -->
+                    <div>
+                        {% if p.has_discount %}
+                        <span class="line-through text-stone-500 text-xs font-mono block">{{ store.currency if store else '₦' }}{{ "{:,.0f}".format(p.original_price) }}</span>
+                        {% endif %}
+                        <span class="font-mono text-lg font-black text-red-400">{{ store.currency if store else '₦' }}{{ "{:,.0f}".format(p.current_price) }}</span>
+                    </div>
                     <button type="button" onclick="quickAddToCart({{ p.id }}, event)" class="bg-red-500 hover:bg-red-600 text-white font-black text-[10px] uppercase tracking-wider py-2.5 px-4 rounded-xl transition cursor-pointer">ADD TO BAG</button>
                 </div>
             </div>
@@ -701,53 +842,80 @@ def query_openrouter(prompt_instruction: str, api_key: str) -> str:
 
 
 # ==============================================================================
-# 🚀 MASTER GENERATION PIPELINE (PRIMARY GEMINI -> BACKUP OPENROUTER -> 3 ARCHETYPES)
+# 🚀 MASTER GENERATION PIPELINE (ALL DASHBOARD FEATURES SUPPORTED)
 # ==============================================================================
 
 def generate_kiosk_template(kiosk_name: str, bio: str, prompt: str, logo_url: str = '', hero_url: str = '', bg_url: str = '', currency: str = '₦') -> str:
     primary_meta_img = logo_url or hero_url or bg_url or ''
 
     system_instruction = (
-        f'You are an elite creative director designing a bespoke storefront website for "{kiosk_name}".\n'
-        'You NEVER build generic, plain, or cookie-cutter templates.\n\n'
+        f'You are an elite creative director designing a custom storefront for "{kiosk_name}".\n'
+        'You NEVER build generic templates.\n\n'
         'CLIENT BRIEF & ASSETS:\n'
         f'- Brand Name: "{kiosk_name}"\n'
         f'- Design Instructions: "{prompt}"\n'
         f'- Brand Bio / Slogan: "{bio}"\n'
         f'- Brand Assets: Logo="{logo_url}", Hero="{hero_url}", Background="{bg_url}", Currency="{currency}"\n\n'
-        'CRITICAL RULES & DATA SCHEMA:\n'
-        '1. IN <head>:\n'
-        '   - Include Google Fonts matching the niche and <script src="https://cdn.tailwindcss.com"></script>.\n'
-        '2. HERO SECTION:\n'
-        '   - Pre-headline pill badge MUST MATCH THE NICHE (e.g. Perfume: "✨ ARTISANAL EXTRAIT // RARE SCENTS", Food: "🔥 FRESH FLAME GRILLED", Tech: "⚡ VERIFIED GEAR").\n'
-        '   - High contrast: Wrap hero text in a dark glassmorphic card (e.g. bg-stone-900/85 backdrop-blur-md) so text is ALWAYS easily readable!\n'
-        '   - Only render hero <img> if Hero asset is non-empty.\n'
-        '3. HEADER & SEARCH:\n'
-        '   - Top bar: Brand logo ("' + logo_url + '") and Name, an input calling oninput="filterProducts(this.value)", and a BAG button with onclick="toggleCart()" containing <span id="cartCountBadge">0</span>.\n'
-        '4. PRODUCTS LOOP (IMAGE INSPECTS DETAILS, BUTTON ADDS DIRECTLY):\n'
-        '   Iterate products using:\n'
-        '   {% for p in regular_products %}\n'
-        '   <div class="product-card" data-name="{{ p.name }}">\n'
-        '       <!-- CLICKING THE PICTURE OPENS FULL-SCREEN DETAIL OVERLAY -->\n'
-        '       <div onclick="openProductModal({{ p.id }})" class="product-img-box w-full h-48 bg-stone-900 rounded-xl overflow-hidden mb-4 relative flex items-center justify-center border border-stone-800 cursor-pointer group">\n'
-        '           {% if p.image and p.image != "default_product.png" %}\n'
-        '               <img src="{{ p.image }}" alt="{{ p.name }}" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">\n'
-        '               <div style="display:none;" class="text-stone-500 text-xs font-mono uppercase tracking-wider">NO PREVIEW</div>\n'
-        '           {% else %}\n'
-        '               <div class="text-stone-500 text-xs font-mono uppercase tracking-wider">NO PREVIEW</div>\n'
+        'CRITICAL JINJA2 VARIABLES & ARCHITECTURE:\n'
+        '1. IN <head>: Include Google Fonts matching niche & <script src="https://cdn.tailwindcss.com"></script>.\n'
+        '2. HERO SECTION: Wrap in: {% if not store or store.is_section_active("hero") %} ... {% endif %}\n'
+        '3. ⚡ FLASH SALES SECTION (CRITICAL REQUIREMENT):\n'
+        '   You MUST include this exact Jinja section for limited-time flash sales:\n'
+        '   {% if flash_sales and (not store or store.is_section_active("flash_sales")) %}\n'
+        '   <section id="flash-sales" class="my-12 ...">\n'
+        '       <!-- Badge: ⚡ FLASH SALE // LIMITED TIME -->\n'
+        '       <h2>Flash Deals</h2>\n'
+        '       <div class="grid ...">\n'
+        '           {% for p in flash_sales %}\n'
+        '           <div class="product-card" data-name="{{ p.name }}">\n'
+        '               <div onclick="openProductModal({{ p.id }})" class="cursor-pointer">\n'
+        '                   <img src="{{ p.image }}" alt="{{ p.name }}" onerror="this.style.display=\'none\';">\n'
+        '               </div>\n'
+        '               <h3>{{ p.name }}</h3>\n'
+        '               <p>{{ p.description }}</p>\n'
+        '               <div>\n'
+        '                   {% if p.has_discount %}\n'
+        '                   <span class="line-through text-stone-400 text-xs">{{ store.currency }}{{ "{:,.0f}".format(p.original_price) }}</span>\n'
+        '                   {% endif %}\n'
+        '                   <span class="font-bold text-amber-500">{{ store.currency }}{{ "{:,.0f}".format(p.current_price) }}</span>\n'
+        '               </div>\n'
+        '               <button type="button" onclick="quickAddToCart({{ p.id }}, event)">ADD TO BAG</button>\n'
+        '           </div>\n'
+        '           {% endfor %}\n'
+        '       </div>\n'
+        '   </section>\n'
+        '   {% endif %}\n'
+        '4. 📢 PROMOTIONAL BANNER ADS:\n'
+        '   {% if ad_slots and (not store or store.is_section_active("ads")) %}\n'
+        '   <section class="ad-banners my-8 ...">\n'
+        '       {% for ad in ad_slots %}\n'
+        '           {% if ad.is_active and ad.banner_image %}\n'
+        '           <a href="{{ ad.target_link or "#" }}" target="_blank"><img src="{{ ad.banner_image }}"></a>\n'
         '           {% endif %}\n'
-        '           <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-xs font-bold text-white">DETAILS 👁️</div>\n'
+        '       {% endfor %}\n'
+        '   </section>\n'
+        '   {% endif %}\n'
+        '5. MAIN PRODUCTS CATALOG:\n'
+        '   Iterate regular items using: {% for p in regular_products %}\n'
+        '   <div class="product-card" data-name="{{ p.name }}">\n'
+        '       <!-- CLICKING PICTURE OPENS FULL-SCREEN DETAIL MODAL -->\n'
+        '       <div onclick="openProductModal({{ p.id }})" class="cursor-pointer ...">\n'
+        '           <img src="{{ p.image }}" alt="{{ p.name }}" onerror="this.style.display=\'none\';">\n'
         '       </div>\n'
-        '       <h3 onclick="openProductModal({{ p.id }})" class="text-lg font-bold text-white mb-1 uppercase tracking-wide cursor-pointer hover:text-amber-400 transition">{{ p.name }}</h3>\n'
-        '       <p class="text-xs text-stone-300 mb-4 line-clamp-2 leading-relaxed">{{ p.description or "Freshly prepared." }}</p>\n'
-        '       <div class="pt-4 border-t border-stone-800 flex justify-between items-center">\n'
-        '           <span class="font-mono text-lg font-black text-amber-400">{{ store.currency if store and store.currency else "₦" }}{{ "{:,.0f}".format(p.current_price) }}</span>\n'
-        '           <!-- BUTTON DIRECTLY ADDS TO BAG WITH TOAST (DOES NOT OPEN MODAL) -->\n'
-        '           <button type="button" onclick="quickAddToCart({{ p.id }}, event)">ADD TO BAG</button>\n'
+        '       <h3 onclick="openProductModal({{ p.id }})" class="cursor-pointer">{{ p.name }}</h3>\n'
+        '       <p>{{ p.description }}</p>\n'
+        '       <div>\n'
+        '           {% if p.has_discount %}\n'
+        '           <span class="line-through text-stone-400 text-xs">{{ store.currency }}{{ "{:,.0f}".format(p.original_price) }}</span>\n'
+        '           {% endif %}\n'
+        '           <span>{{ store.currency }}{{ "{:,.0f}".format(p.current_price) }}</span>\n'
         '       </div>\n'
+        '       <!-- BUTTON QUICK-ADDS TO BAG (TOAST NOTIFICATION) -->\n'
+        '       <button type="button" onclick="quickAddToCart({{ p.id }}, event)">ADD TO BAG</button>\n'
         '   </div>\n'
         '   {% endfor %}\n'
-        '5. DO NOT write your own checkout drawer, modal, or toast scripts. The engine is automatically injected.\n'
+        '6. HEADER: Top bar must have search input calling oninput="filterProducts(this.value)" and BAG button calling onclick="toggleCart()" with <span id="cartCountBadge">0</span>.\n'
+        '7. DO NOT write your own cart drawer, modal, or toast scripts. The engine is automatically injected.\n'
         'Output ONLY pure valid HTML. No markdown backticks.'
     )
 

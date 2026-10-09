@@ -5,7 +5,6 @@ import urllib.request
 import urllib.error
 
 # 🛡️ THE BULLETPROOF INTERACTIVE ENGINE (MODAL INSPECTION + TOAST + CHECKOUT)
-# (Assuming your GUARANTEED_CART_ENGINE string is defined here exactly as before)
 GUARANTEED_CART_ENGINE = """
 <!-- ======================================================== -->
 <!-- BULLETPROOF DETAIL MODAL, TOAST & WHATSAPP CHECKOUT ENGINE -->
@@ -37,40 +36,40 @@ GUARANTEED_CART_ENGINE = """
     };
 </script>
 <div id="productModal" onclick="if(event.target === this) closeProductModal();">
-    <div class="bg-[#14161f] border border-stone-800 max-w-xl w-full rounded-3xl shadow-2xl relative text-white overflow-hidden flex flex-col md:flex-row max-h-[90vh]">
-        <button type="button" onclick="closeProductModal()" class="absolute top-4 right-4 z-10 bg-black/60 hover:bg-black text-stone-300 hover:text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg cursor-pointer transition">&times;</button>
-        <div id="modalImgContainer" class="w-full md:w-1/2 bg-stone-900 flex items-center justify-center relative min-h-[220px] md:min-h-full overflow-hidden border-b md:border-b-0 md:border-r border-stone-800">
+    <div class="bg-[#14161f] border border-zinc-800 max-w-xl w-full rounded-3xl shadow-2xl relative text-white overflow-hidden flex flex-col md:flex-row max-h-[90vh]">
+        <button type="button" onclick="closeProductModal()" class="absolute top-4 right-4 z-10 bg-black/60 hover:bg-black text-zinc-300 hover:text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg cursor-pointer transition">&times;</button>
+        <div id="modalImgContainer" class="w-full md:w-1/2 bg-zinc-900 flex items-center justify-center relative min-h-[220px] md:min-h-full overflow-hidden border-b md:border-b-0 md:border-r border-zinc-800">
             <img id="modalProductImg" src="" alt="Product Preview" class="w-full h-full object-cover max-h-[300px] md:max-h-full">
-            <div id="modalImgPlaceholder" class="text-stone-500 font-mono text-xs uppercase text-center p-4" style="display:none;">NO PREVIEW AVAILABLE</div>
+            <div id="modalImgPlaceholder" class="text-zinc-500 font-mono text-xs uppercase text-center p-4" style="display:none;">NO PREVIEW AVAILABLE</div>
         </div>
         <div class="p-6 md:p-8 w-full md:w-1/2 flex flex-col justify-between overflow-y-auto">
             <div>
                 <span class="text-[10px] font-mono text-amber-400 uppercase tracking-widest block mb-1">Product Details</span>
                 <h3 id="modalProductName" class="font-bold text-xl text-white mb-2 tracking-tight"></h3>
-                <p id="modalProductDesc" class="text-xs text-stone-400 mb-4 leading-relaxed"></p>
+                <p id="modalProductDesc" class="text-xs text-zinc-400 mb-4 leading-relaxed"></p>
                 <p id="modalProductPrice" class="font-mono text-2xl font-black text-amber-400 mb-4"></p>
                 <div id="modalVariantsContainer" class="space-y-3 mb-6"></div>
             </div>
-            <button type="button" onclick="confirmAddToCartFromModal()" class="w-full bg-amber-400 hover:bg-amber-300 text-black font-black py-4 rounded-xl text-xs uppercase tracking-wider transition cursor-pointer shadow-lg">ADD TO BAG &rarr;</button>
+            <button type="button" onclick="confirmAddToCartFromModal()" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-black py-4 rounded-xl text-xs uppercase tracking-wider transition cursor-pointer shadow-lg shadow-amber-500/20">ADD TO BAG &rarr;</button>
         </div>
     </div>
 </div>
 <div id="cartOverlay" onclick="toggleCart()"></div>
 <aside id="cartDrawer">
     <div>
-        <div class="flex justify-between items-center pb-4 border-b border-stone-800 mb-6">
-            <div><h3 class="font-bold text-base uppercase tracking-wider text-white m-0">Your Shopping Bag</h3><span class="text-[10px] text-stone-400 font-mono">Direct WhatsApp Intake</span></div>
-            <button type="button" onclick="toggleCart()" class="text-xs font-mono font-bold text-stone-400 hover:text-white cursor-pointer">&times; CLOSE</button>
+        <div class="flex justify-between items-center pb-4 border-b border-zinc-800 mb-6">
+            <div><h3 class="font-bold text-base uppercase tracking-wider text-white m-0">Your Shopping Bag</h3><span class="text-[10px] text-zinc-400 font-mono">Direct WhatsApp Intake</span></div>
+            <button type="button" onclick="toggleCart()" class="text-xs font-mono font-bold text-zinc-400 hover:text-white cursor-pointer">&times; CLOSE</button>
         </div>
         <div id="cartItemsList" class="space-y-3 max-h-[40vh] overflow-y-auto pr-1"></div>
     </div>
-    <div class="pt-6 border-t border-stone-800">
-        <div class="flex justify-between items-center mb-6 font-mono"><span class="text-xs uppercase text-stone-400">Total:</span><span id="cartTotalPrice" class="font-black text-2xl text-amber-400">{{ (store.currency if store and store.currency else '₦') }}0.00</span></div>
+    <div class="pt-6 border-t border-zinc-800">
+        <div class="flex justify-between items-center mb-6 font-mono"><span class="text-xs uppercase text-zinc-400">Total:</span><span id="cartTotalPrice" class="font-black text-2xl text-amber-400">{{ (store.currency if store and store.currency else '₦') }}0.00</span></div>
         <form id="checkoutForm" onsubmit="handleCheckout(event)" class="space-y-3">
-            <input type="text" id="custName" required placeholder="Your Full Name" class="w-full p-3 bg-[#181a24] border border-stone-800 rounded-xl text-xs text-white outline-none focus:border-amber-400">
-            <input type="text" id="custPhone" required placeholder="WhatsApp Number" class="w-full p-3 bg-[#181a24] border border-stone-800 rounded-xl text-xs text-white outline-none focus:border-amber-400">
-            <textarea id="custAddress" required placeholder="Delivery Address" rows="2" class="w-full p-3 bg-[#181a24] border border-stone-800 rounded-xl text-xs text-white outline-none focus:border-amber-400"></textarea>
-            <button type="submit" id="checkoutBtn" class="w-full bg-[#16a34a] hover:bg-[#15803d] text-white font-black py-4 rounded-xl text-xs uppercase tracking-wider transition cursor-pointer shadow-lg">COMPLETE ORDER ON WHATSAPP &rarr;</button>
+            <input type="text" id="custName" required placeholder="Your Full Name" class="w-full p-3 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-white outline-none focus:border-amber-500 transition">
+            <input type="text" id="custPhone" required placeholder="WhatsApp Number" class="w-full p-3 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-white outline-none focus:border-amber-500 transition">
+            <textarea id="custAddress" required placeholder="Delivery Address" rows="2" class="w-full p-3 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-white outline-none focus:border-amber-500 transition"></textarea>
+            <button type="submit" id="checkoutBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-xl text-xs uppercase tracking-wider transition cursor-pointer shadow-lg">COMPLETE ORDER ON WHATSAPP &rarr;</button>
         </form>
     </div>
 </aside>
@@ -80,23 +79,23 @@ GUARANTEED_CART_ENGINE = """
     let cart = []; let currentModalProduct = null; let toastTimeout = null;
     function showCartToast(m){const t=document.getElementById('cartToast'),e=document.getElementById('cartToastMsg');if(!t||!e)return;e.innerText=m||'Added to bag!',t.classList.add('show'),toastTimeout&&clearTimeout(toastTimeout),toastTimeout=setTimeout(()=>{t.classList.remove('show')},2500)}
     function quickAddToCart(i,e){e&&(e.preventDefault(),e.stopPropagation());const p=window.KIOSK_PRODUCTS[i];if(!p)return;const x=cart.find(t=>t.product_id===p.id&&!t.variants);x?x.quantity+=1:cart.push({product_id:p.id,name:p.name,price:p.price,variants:'',quantity:1}),updateCartUI(),showCartToast(`Added ${p.name} to bag!`)}
-    function openProductModal(i){const p=window.KIOSK_PRODUCTS[i];if(!p)return;currentModalProduct=p,document.getElementById('modalProductName').innerText=p.name,document.getElementById('modalProductDesc').innerText=p.description||'Premium curated quality.',document.getElementById('modalProductPrice').innerText=`${storeCurrency}${Number(p.price).toLocaleString()}`;const m=document.getElementById('modalProductImg'),h=document.getElementById('modalImgPlaceholder');p.image&&p.image!=='default_product.png'&&p.image!=='None'&&p.image!==''?(m.src=p.image,m.style.display='block',h.style.display='none',m.onerror=function(){this.style.display='none',h.style.display='block'}):(m.style.display='none',h.style.display='block');const c=document.getElementById('modalVariantsContainer');c.innerHTML='';const a=p.attributes||{};for(const[r,o]of Object.entries(a)){if(!Array.isArray(o)||0===o.length)continue;const s=document.createElement('div');s.innerHTML=`<label class='block font-mono text-[10px] uppercase text-amber-400 mb-1 font-bold'>${r}</label><select class='variant-select w-full p-2.5 bg-[#181a24] border border-stone-800 text-white font-mono text-xs rounded-xl outline-none focus:border-amber-400' data-attr='${r}'>${o.map(t=>`<option value="${t}">${t}</option>`).join('')}</select>`,c.appendChild(s)}document.getElementById('productModal').classList.add('active')}
+    function openProductModal(i){const p=window.KIOSK_PRODUCTS[i];if(!p)return;currentModalProduct=p,document.getElementById('modalProductName').innerText=p.name,document.getElementById('modalProductDesc').innerText=p.description||'Premium curated quality.',document.getElementById('modalProductPrice').innerText=`${storeCurrency}${Number(p.price).toLocaleString()}`;const m=document.getElementById('modalProductImg'),h=document.getElementById('modalImgPlaceholder');p.image&&p.image!=='default_product.png'&&p.image!=='None'&&p.image!==''?(m.src=p.image,m.style.display='block',h.style.display='none',m.onerror=function(){this.style.display='none',h.style.display='block'}):(m.style.display='none',h.style.display='block');const c=document.getElementById('modalVariantsContainer');c.innerHTML='';const a=p.attributes||{};for(const[r,o]of Object.entries(a)){if(!Array.isArray(o)||0===o.length)continue;const s=document.createElement('div');s.innerHTML=`<label class='block font-mono text-[10px] uppercase text-amber-400 mb-1 font-bold'>${r}</label><select class='variant-select w-full p-2.5 bg-zinc-900 border border-zinc-800 text-white font-mono text-xs rounded-xl outline-none focus:border-amber-500' data-attr='${r}'>${o.map(t=>`<option value="${t}">${t}</option>`).join('')}</select>`,c.appendChild(s)}document.getElementById('productModal').classList.add('active')}
     function closeProductModal(){document.getElementById('productModal').classList.remove('active'),currentModalProduct=null}
     function confirmAddToCartFromModal(){if(!currentModalProduct)return;const e=[];document.querySelectorAll('.variant-select').forEach(t=>{e.push(`${t.getAttribute('data-attr')}: ${t.value}`)}),cart.push({product_id:currentModalProduct.id,name:currentModalProduct.name,price:currentModalProduct.price,variants:e.join(' | '),quantity:1}),updateCartUI(),showCartToast(`Added ${currentModalProduct.name} to bag!`),closeProductModal()}
     function filterProducts(e){const r=(e||'').toLowerCase().trim();document.querySelectorAll('.product-card, .catalog-item').forEach(e=>{const t=(e.getAttribute('data-name')||e.querySelector('.product-title')?.innerText||e.innerText||'').toLowerCase();e.style.display=t.includes(r)?'':'none'})}
     function filterCatalog(){filterProducts(document.getElementById('catalogSearchInput')?.value)}
     function toggleCart(){document.getElementById('cartDrawer').classList.toggle('open'),document.getElementById('cartOverlay').classList.toggle('active')}
-    function updateCartUI(){const e=document.getElementById('cartItemsList'),r=document.getElementById('cartCountBadge'),t=document.getElementById('cartTotalPrice');r&&(r.innerText=cart.reduce((e,r)=>e+r.quantity,0));if(!e)return;e.innerHTML='';let o=0;cart.forEach((r,a)=>{o+=r.price*r.quantity;const s=document.createElement('div');s.className='flex justify-between items-start p-3 bg-[#181a24] border border-stone-800 rounded-xl text-xs font-mono',s.innerHTML=`<div><strong class="text-white block font-bold">${r.name}</strong>${r.variants?`<span class="text-[10px] text-amber-400 block">${r.variants}</span>`:''}<span class="text-emerald-400 font-bold mt-1 block">${storeCurrency}${Number(r.price).toLocaleString()}</span></div><button type="button" onclick="cart.splice(${a}, 1); updateCartUI();" class="text-rose-400 hover:text-rose-300 font-bold ml-3 text-base cursor-pointer">&times;</button>`,e.appendChild(s)}),t&&(t.innerText=`${storeCurrency}${o.toLocaleString()}`)}
+    function updateCartUI(){const e=document.getElementById('cartItemsList'),r=document.getElementById('cartCountBadge'),t=document.getElementById('cartTotalPrice');r&&(r.innerText=cart.reduce((e,r)=>e+r.quantity,0));if(!e)return;e.innerHTML='';let o=0;cart.forEach((r,a)=>{o+=r.price*r.quantity;const s=document.createElement('div');s.className='flex justify-between items-start p-3 bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-mono',s.innerHTML=`<div><strong class="text-white block font-bold">${r.name}</strong>${r.variants?`<span class="text-[10px] text-amber-400 block">${r.variants}</span>`:''}<span class="text-emerald-400 font-bold mt-1 block">${storeCurrency}${Number(r.price).toLocaleString()}</span></div><button type="button" onclick="cart.splice(${a}, 1); updateCartUI();" class="text-rose-400 hover:text-rose-300 font-bold ml-3 text-base cursor-pointer">&times;</button>`,e.appendChild(s)}),t&&(t.innerText=`${storeCurrency}${o.toLocaleString()}`)}
     async function handleCheckout(e){e.preventDefault();if(0===cart.length)return void alert('Your bag is empty.');const r=document.getElementById('checkoutBtn'),t=r.innerText;r.innerText='GENERATING RECEIPT...',r.disabled=!0;const o={customer_name:document.getElementById('custName').value,customer_phone:document.getElementById('custPhone').value,delivery_address:document.getElementById('custAddress').value,cart:cart};try{const e=await fetch(`/${storeSlug}/checkout`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(o)}),a=await e.json();'success'===a.status?(cart=[],updateCartUI(),toggleCart(),window.location.href=a.whatsapp_url):(alert(a.message||'Error creating order.'),r.innerText=t,r.disabled=!1)}catch(e){alert('Connection error.'),r.innerText=t,r.disabled=!1}}
 </script>
 """
 
 # ==============================================================================
-# 🏛️ THE MASTER FALLBACK TEMPLATE (Your exact Marketplace logic)
-# Stripped of JS/Modals so the Bulletproof Engine can handle them safely.
+# 🏛️ THE ELITE MASTER FALLBACK TEMPLATE (Pinterest-Worthy Design)
+# Strictly preserves all backend logic while delivering award-winning UI/UX.
 # ==============================================================================
 MASTER_FALLBACK_TEMPLATE = """<!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -105,80 +104,120 @@ MASTER_FALLBACK_TEMPLATE = """<!DOCTYPE html>
     <meta property="og:description" content="{% if store.show_public_stats %}Over {{ '{:,}'.format(store.views_count) }} visits • Verified Merchant • Shop our official catalog.{% else %}{{ store.bio }}{% endif %}">
     <meta property="og:image" content="{{ url_for('static', filename='uploads/logos/' + store.logo, _external=True) if not store.logo.startswith('http') else store.logo }}">
     <meta property="og:type" content="website">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <style>
-        :root { --clay: #8d5b3e; --cream: #f9f5f0; --dark-oak: #2d1e14; }
-        body { background-color: var(--cream); color: var(--dark-oak); font-family: 'Georgia', serif; margin: 0;
+        body { 
+            background-color: #09090b; 
+            color: #fafafa; 
+            font-family: 'Inter', sans-serif; 
             {% if store.background_image %}
-            background-image: linear-gradient(rgba(249, 245, 240, 0.88), rgba(249, 245, 240, 0.88)), url('{{ store.background_image if store.background_image.startswith("http") else url_for("static", filename="uploads/backgrounds/" + store.background_image) }}');
+            background-image: linear-gradient(to bottom, rgba(9, 9, 11, 0.92), rgba(9, 9, 11, 0.98)), url('{{ store.background_image if store.background_image.startswith("http") else url_for("static", filename="uploads/backgrounds/" + store.background_image) }}');
             background-size: cover; background-attachment: fixed; background-position: center;
-            {% endif %} }
-        .font-ui { font-family: 'Montserrat', sans-serif; }
-        .btn-oak { background: var(--dark-oak); color: white; padding: 12px 20px; font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; border: none; cursor: pointer; transition: 0.3s; }
-        .btn-clay { background: var(--clay); color: white; padding: 12px 20px; font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; border: none; cursor: pointer; transition: 0.3s; }
-        .ad-corner-tag { position: absolute; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.65); color: #fff; padding: 2px 8px; border-radius: 4px; font-family: monospace; font-size: 9px; font-weight: bold; letter-spacing: 1px; backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.2); pointer-events: none; }
+            {% endif %} 
+        }
+        .font-display { font-family: 'Playfair Display', serif; }
+        .glass-panel { background: rgba(24, 24, 27, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .ad-corner-tag { position: absolute; top: 12px; right: 12px; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); color: #fff; padding: 4px 10px; border-radius: 99px; font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.05em; border: 1px solid rgba(255, 255, 255, 0.1); pointer-events: none; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between">
-    <header class="bg-white/95 backdrop-blur border-b border-[#eee] py-5 px-6 sticky top-0 z-40">
-        <div class="max-w-6xl mx-auto flex items-center justify-between">
-            <div class="flex items-center gap-3">
+<body class="min-h-screen flex flex-col antialiased selection:bg-amber-500/30 selection:text-amber-200">
+
+    <!-- Premium Glass Header -->
+    <header class="fixed top-0 left-0 w-full z-40 glass-panel border-b border-white/5 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-4">
+            <a href="/{{ store.slug }}" class="flex items-center gap-3 group flex-shrink-0">
                 {% if store.logo and store.logo != 'default_logo.png' %}
-                    <img src="{{ store.logo if store.logo.startswith('http') else url_for('static', filename='uploads/logos/' + store.logo) }}" class="h-10 w-10 object-contain rounded-full">
+                    <img src="{{ store.logo if store.logo.startswith('http') else url_for('static', filename='uploads/logos/' + store.logo) }}" class="h-10 w-10 object-contain rounded-full border border-white/10 group-hover:border-amber-500/50 transition-colors duration-300">
+                {% else %}
+                    <div class="h-10 w-10 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center text-white font-display font-bold text-lg shadow-lg border border-amber-500/20">
+                        {{ (store.name[0] if store and store.name else 'M') }}
+                    </div>
                 {% endif %}
-                <div>
-                    <a href="/{{ store.slug }}" class="font-ui font-semibold text-lg text-dark-oak tracking-wider">{{ store.name }}</a>
-                    <p class="font-serif italic text-xs text-stone-500 m-0">{{ store.bio }}</p>
+                <div class="hidden sm:block">
+                    <h1 class="font-display text-xl font-bold text-white tracking-tight group-hover:text-amber-400 transition-colors">{{ store.name }}</h1>
+                    <p class="text-[11px] text-zinc-400 font-medium tracking-wide uppercase">{{ store.bio[:30] }}{% if store.bio|length > 30 %}...{% endif %}</p>
                 </div>
-            </div>
-            <button onclick="toggleCart()" class="btn-clay flex items-center gap-2 cursor-pointer">
+            </a>
+            
+            <button onclick="toggleCart()" class="flex items-center gap-2.5 bg-white text-zinc-950 hover:bg-zinc-200 px-5 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 shadow-lg shadow-white/5 hover:shadow-white/10 hover:-translate-y-0.5">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
                 <span>BAG</span>
-                <span id="cartCountBadge" class="bg-white text-clay px-2 py-0.5 rounded-full font-bold text-[0.65rem]">0</span>
+                <span id="cartCountBadge" class="bg-zinc-950 text-white px-2 py-0.5 rounded-full font-bold text-[0.65rem]">0</span>
             </button>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-6 py-10 w-full flex-grow">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 w-full flex-grow">
+        
+        <!-- Hero Section -->
+        {% if store.is_section_active('hero') and store.hero_image %}
+        <div class="mb-16 relative group">
+            <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent z-10 rounded-3xl"></div>
+            <img src="{{ store.hero_image if store.hero_image.startswith('http') else url_for('static', filename='uploads/heroes/' + store.hero_image) }}" 
+                 alt="Hero Showcase" class="w-full h-64 md:h-96 object-cover rounded-3xl shadow-2xl shadow-black/50 border border-white/5 group-hover:scale-[1.01] transition-transform duration-700 ease-out">
+            <div class="absolute bottom-0 left-0 z-20 p-6 md:p-10">
+                <h2 class="font-display text-3xl md:text-5xl font-bold text-white mb-2 tracking-tight drop-shadow-lg">{{ store.name }}</h2>
+                <p class="text-zinc-300 text-sm md:text-base max-w-lg drop-shadow-md">{{ store.bio }}</p>
+            </div>
+        </div>
+        {% else %}
+        <div class="mb-16 text-center py-12">
+            <h2 class="font-display text-4xl md:text-6xl font-bold text-white mb-4 tracking-tight">{{ store.name }}</h2>
+            <p class="text-zinc-400 text-lg max-w-2xl mx-auto leading-relaxed">{{ store.bio }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Premium Ad Slot #1 -->
         {% if store.is_section_active('ads') and 1 in ad_slots %}
-        <div class="mb-10 relative">
-            <span class="ad-corner-tag">AD</span>
-            <a href="/ad/click/{{ ad_slots[1].id }}" target="_blank">
-                <img src="{{ ad_slots[1].banner_image if ad_slots[1].banner_image.startswith('http') else url_for('static', filename='uploads/ads/' + ad_slots[1].banner_image) }}" alt="Sponsor Ad" class="w-full h-28 md:h-36 object-cover border border-[#eee] shadow-sm rounded-xl">
+        <div class="mb-16 relative group">
+            <span class="ad-corner-tag">SPONSORED</span>
+            <a href="/ad/click/{{ ad_slots[1].id }}" target="_blank" class="block w-full overflow-hidden rounded-2xl border border-white/10 shadow-2xl shadow-black/40">
+                <img src="{{ ad_slots[1].banner_image if ad_slots[1].banner_image.startswith('http') else url_for('static', filename='uploads/ads/' + ad_slots[1].banner_image) }}" 
+                     alt="Sponsor Ad" class="w-full h-32 md:h-48 object-cover group-hover:scale-[1.02] transition-transform duration-500 ease-out">
             </a>
         </div>
         {% endif %}
 
-        {% if store.is_section_active('hero') and store.hero_image %}
-        <div class="mb-12">
-            <img src="{{ store.hero_image if store.hero_image.startswith('http') else url_for('static', filename='uploads/heroes/' + store.hero_image) }}" alt="Hero Showcase" class="w-full h-48 md:h-64 object-cover rounded-2xl shadow-sm border border-[#eee]">
-        </div>
-        {% endif %}
-
+        <!-- Flash Sales Section -->
         {% if store.is_section_active('flash_sales') and flash_sales %}
-        <section class="mb-14">
-            <div class="flex items-center gap-3 mb-6">
-                <span class="font-ui text-xs font-bold uppercase tracking-wider bg-[#ffebeb] text-[#b33a3a] px-3 py-1 border border-[#b33a3a]/20">🔥 Flash Deals</span>
-                <span class="font-serif italic text-sm text-stone-500">Limited quantity promotions</span>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {% for p in flash_sales %}
-                <div class="product-card bg-white p-6 border-t-[4px] border-[#b33a3a] shadow-sm flex flex-col justify-between" data-name="{{ p.name }}">
-                    <div>
-                        <div class="h-44 bg-stone-50 mb-4 overflow-hidden flex items-center justify-center">
-                            <img src="{{ p.image if p.image.startswith('http') else url_for('static', filename='uploads/products/' + p.image) }}" alt="{{ p.name }}" class="object-cover h-full w-full">
-                        </div>
-                        <h4 class="font-ui font-semibold text-base mb-1">{{ p.name }}</h4>
-                        <p class="font-serif text-xs text-stone-500 mb-4">{{ p.description }}</p>
+        <section class="mb-20">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-3">
+                    <div class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
                     </div>
-                    <div>
-                        <div class="mb-4">
-                            <span class="line-through text-stone-400 font-ui text-xs">{{ store.currency }}{{ "{:,.2f}".format(p.original_price) }}</span>
-                            <span class="font-ui font-bold text-lg text-[#b33a3a] ml-2">{{ store.currency }}{{ "{:,.2f}".format(p.current_price) }}</span>
+                    <h3 class="font-display text-2xl md:text-3xl font-bold text-white tracking-tight">Flash Deals</h3>
+                </div>
+                <span class="hidden md:inline-block text-xs font-medium text-zinc-500 uppercase tracking-widest border border-zinc-800 px-3 py-1 rounded-full">Limited Quantity</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {% for p in flash_sales %}
+                <div class="product-card group bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden hover:border-amber-500/30 hover:shadow-2xl hover:shadow-amber-900/10 transition-all duration-300 flex flex-col" data-name="{{ p.name }}">
+                    <div onclick="openProductModal({{ p.id }})" class="relative aspect-[4/5] bg-zinc-800 overflow-hidden cursor-pointer">
+                        <img src="{{ p.image if p.image.startswith('http') else url_for('static', filename='uploads/products/' + p.image) }}" alt="{{ p.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out">
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                            <span class="opacity-0 group-hover:opacity-100 bg-white/90 backdrop-blur text-zinc-950 text-xs font-bold px-4 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">Quick View</span>
                         </div>
-                        <button type="button" onclick="openProductModal({{ p.id }})" class="btn-clay w-full text-center cursor-pointer">SELECT & ORDER</button>
+                    </div>
+                    <div class="p-5 flex flex-col flex-grow">
+                        <h4 class="font-medium text-base text-white mb-1 line-clamp-1 group-hover:text-amber-400 transition-colors">{{ p.name }}</h4>
+                        <p class="text-xs text-zinc-500 mb-4 line-clamp-2 leading-relaxed">{{ p.description }}</p>
+                        <div class="mt-auto flex items-end justify-between">
+                            <div>
+                                <span class="line-through text-zinc-600 text-xs font-medium block">{{ store.currency }}{{ "{:,.2f}".format(p.original_price) }}</span>
+                                <span class="font-bold text-xl text-amber-400">{{ store.currency }}{{ "{:,.2f}".format(p.current_price) }}</span>
+                            </div>
+                            <button type="button" onclick="openProductModal({{ p.id }})" class="bg-white text-zinc-950 hover:bg-amber-400 hover:text-black font-semibold text-xs px-4 py-2.5 rounded-xl transition-all duration-300">SELECT</button>
+                        </div>
                     </div>
                 </div>
                 {% endfor %}
@@ -186,154 +225,90 @@ MASTER_FALLBACK_TEMPLATE = """<!DOCTYPE html>
         </section>
         {% endif %}
 
-        <div class="flex flex-wrap items-center justify-between gap-4 mb-8 pb-4 border-b border-[#eee]">
+        <!-- Catalog Header & Search -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-6 border-b border-white/5">
             <div>
-                <h3 class="font-ui text-xl font-normal lowercase tracking-tight m-0">kiosk catalog</h3>
-                <p class="font-serif italic text-xs text-stone-400 m-0">Freshly prepared & available items</p>
+                <h3 class="font-display text-3xl font-bold text-white tracking-tight">Curated Catalog</h3>
+                <p class="text-sm text-zinc-500 mt-1">Explore our exclusive collection of premium items.</p>
             </div>
-            <input type="text" id="catalogSearchInput" onkeyup="filterCatalog()" placeholder="Search menu or products..." class="p-2.5 border border-stone-200 text-xs font-ui outline-none w-64 rounded-xl bg-white shadow-sm focus:border-clay">
+            <div class="relative w-full md:w-80">
+                <input type="text" id="catalogSearchInput" onkeyup="filterCatalog()" placeholder="Search products..." 
+                       class="w-full pl-10 pr-4 py-3 bg-zinc-900/50 border border-white/10 rounded-xl text-sm text-white placeholder-zinc-500 outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            </div>
         </div>
 
-        <section class="mb-14">
-            <div id="catalogGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Regular Products Grid -->
+        <section class="mb-20">
+            <div id="catalogGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {% for p in regular_products %}
-                <div class="catalog-item product-card bg-white p-6 border-t-[4px] border-clay shadow-sm flex flex-col justify-between" data-name="{{ p.name }}">
-                    <div>
-                        <div class="h-48 bg-stone-50 mb-4 overflow-hidden flex items-center justify-center">
-                            <img src="{{ p.image if p.image.startswith('http') else url_for('static', filename='uploads/products/' + p.image) }}" alt="{{ p.name }}" class="object-cover h-full w-full">
+                <div class="catalog-item product-card group bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden hover:border-white/10 hover:shadow-2xl hover:shadow-black/40 transition-all duration-300 flex flex-col" data-name="{{ p.name }}">
+                    <div onclick="openProductModal({{ p.id }})" class="relative aspect-[4/5] bg-zinc-800 overflow-hidden cursor-pointer">
+                        <img src="{{ p.image if p.image.startswith('http') else url_for('static', filename='uploads/products/' + p.image) }}" alt="{{ p.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out">
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                            <span class="opacity-0 group-hover:opacity-100 bg-white/90 backdrop-blur text-zinc-950 text-xs font-bold px-4 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">Quick View</span>
                         </div>
-                        <h4 class="product-title font-ui font-semibold text-base text-dark-oak mb-1">{{ p.name }}</h4>
-                        <p class="font-serif text-xs text-stone-500 mb-4">{{ p.description }}</p>
                     </div>
-                    <div>
-                        <div class="mb-4 font-ui">
-                            {% if p.has_discount %}
-                                <span class="line-through text-stone-400 text-xs">{{ store.currency }}{{ "{:,.2f}".format(p.original_price) }}</span>
-                                <span class="font-bold text-base text-clay ml-1">{{ store.currency }}{{ "{:,.2f}".format(p.discount_price) }}</span>
+                    <div class="p-5 flex flex-col flex-grow">
+                        <h4 class="product-title font-medium text-base text-white mb-1 line-clamp-1 group-hover:text-zinc-300 transition-colors">{{ p.name }}</h4>
+                        <p class="text-xs text-zinc-500 mb-4 line-clamp-2 leading-relaxed">{{ p.description }}</p>
+                        <div class="mt-auto">
+                            <div class="mb-4">
+                                {% if p.has_discount %}
+                                    <span class="line-through text-zinc-600 text-xs font-medium block">{{ store.currency }}{{ "{:,.2f}".format(p.original_price) }}</span>
+                                    <span class="font-bold text-lg text-white">{{ store.currency }}{{ "{:,.2f}".format(p.discount_price) }}</span>
+                                {% else %}
+                                    <span class="font-bold text-lg text-white">{{ store.currency }}{{ "{:,.2f}".format(p.original_price) }}</span>
+                                {% endif %}
+                                
+                                {% if p.is_unlimited_stock %}
+                                    <span class="text-[10px] text-emerald-500 font-semibold flex items-center gap-1.5 mt-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> In Stock
+                                    </span>
+                                {% else %}
+                                    <span class="text-[10px] text-zinc-500 font-medium flex items-center gap-1.5 mt-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span> {{ p.stock }} units left
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            {% if p.is_available %}
+                                <button type="button" onclick="openProductModal({{ p.id }})" class="w-full bg-zinc-100 hover:bg-white text-zinc-950 font-semibold text-sm py-3 rounded-xl transition-all duration-300 hover:-translate-y-0.5">
+                                    View & Order
+                                </button>
                             {% else %}
-                                <span class="font-bold text-base text-dark-oak">{{ store.currency }}{{ "{:,.2f}".format(p.original_price) }}</span>
-                            {% endif %}
-                            {% if p.is_unlimited_stock %}
-                                <span class="text-[0.65rem] text-emerald-600 font-bold block mt-0.5">● Freshly Made / In Stock</span>
-                            {% else %}
-                                <span class="text-[0.65rem] text-stone-400 block mt-0.5">{{ p.stock }} units left</span>
+                                <button disabled class="w-full py-3 bg-zinc-800/50 text-zinc-600 font-medium text-sm rounded-xl cursor-not-allowed border border-white/5">
+                                    Out of Stock
+                                </button>
                             {% endif %}
                         </div>
-                        {% if p.is_available %}
-                            <button type="button" onclick="openProductModal({{ p.id }})" class="btn-oak w-full text-center cursor-pointer">VIEW & ORDER</button>
-                        {% else %}
-                            <button disabled class="w-full py-3 bg-stone-100 text-stone-400 font-ui text-xs font-semibold uppercase tracking-wider cursor-not-allowed">OUT OF STOCK</button>
-                        {% endif %}
                     </div>
                 </div>
                 {% else %}
-                <p class="font-serif italic text-stone-400 col-span-3">No regular items available in catalog right now.</p>
+                <div class="col-span-full py-20 text-center border border-dashed border-white/10 rounded-2xl">
+                    <p class="text-zinc-500 font-medium">No regular items available in the catalog right now.</p>
+                </div>
                 {% endfor %}
             </div>
         </section>
 
+        <!-- Premium Ad Slot #3 -->
         {% if store.is_section_active('ads') and 3 in ad_slots %}
-        <div class="mt-10 relative">
-            <span class="ad-corner-tag">AD</span>
-            <a href="/ad/click/{{ ad_slots[3].id }}" target="_blank">
-                <img src="{{ ad_slots[3].banner_image if ad_slots[3].banner_image.startswith('http') else url_for('static', filename='uploads/ads/' + ad_slots[3].banner_image) }}" alt="Sponsor Ad" class="w-full h-28 md:h-36 object-cover border border-[#eee] shadow-sm rounded-xl">
+        <div class="mt-10 relative group">
+            <span class="ad-corner-tag">SPONSORED</span>
+            <a href="/ad/click/{{ ad_slots[3].id }}" target="_blank" class="block w-full overflow-hidden rounded-2xl border border-white/10 shadow-2xl shadow-black/40">
+                <img src="{{ ad_slots[3].banner_image if ad_slots[3].banner_image.startswith('http') else url_for('static', filename='uploads/ads/' + ad_slots[3].banner_image) }}" 
+                     alt="Sponsor Ad" class="w-full h-32 md:h-48 object-cover group-hover:scale-[1.02] transition-transform duration-500 ease-out">
             </a>
         </div>
         {% endif %}
+
     </main>
 
-    <footer class="bg-white border-t border-[#eee] py-8 text-center text-xs font-ui text-stone-400">
-        Made with <a href="/" class="text-clay font-bold">Marketplace</a> • Powered by Techlite
-    </footer>
-</body>
-</html>"""
-
-
-def get_curated_fallback_template(kiosk_name: str, bio: str, prompt: str) -> str:
-    # We now exclusively use your Master Marketplace Template as the ultimate fail-safe
-    return MASTER_FALLBACK_TEMPLATE
-
-
-def clean_html_fences(raw_text: str) -> str:
-    raw_text = re.sub(r'^```html\s*', '', raw_text.strip(), flags=re.IGNORECASE)
-    raw_text = re.sub(r'^```\s*', '', raw_text.strip())
-    raw_text = re.sub(r'```$', '', raw_text.strip())
-    return raw_text.strip()
-
-
-def inject_bulletproof_chassis(html_content: str, kiosk_name: str = '', bio: str = '', meta_img: str = '') -> str:
-    safe_title = kiosk_name.strip() if kiosk_name else "{{ store.name }}"
-    safe_desc = bio.strip().replace('"', '&quot;') if bio else "{{ store.bio or 'Explore our catalog on Marketplace' }}"
-    safe_img = meta_img.strip() if meta_img else "{{ store.logo or store.hero_image or '' }}"
-
-    meta_tags = (
-        '    <meta charset="UTF-8">\n'
-        '    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
-        f'    <title>{safe_title}</title>\n'
-        f'    <meta name="description" content="{safe_desc}">\n'
-        '    <meta property="og:type" content="website">\n'
-        '    <meta property="og:site_name" content="Marketplace">\n'
-        f'    <meta property="og:title" content="{safe_title}">\n'
-        f'    <meta property="og:description" content="{safe_desc}">\n'
-        f'    <meta property="og:image" content="{safe_img}">\n'
-        '    <meta name="twitter:card" content="summary_large_image">\n'
-        f'    <meta name="twitter:title" content="{safe_title}">\n'
-        f'    <meta name="twitter:description" content="{safe_desc}">\n'
-        f'    <meta name="twitter:image" content="{safe_img}">'
-    )
-
-    if re.search(r'<head[^>]*>', html_content, re.IGNORECASE):
-        html_content = re.sub(r'<title>.*?</title>', '', html_content, flags=re.IGNORECASE | re.DOTALL)
-        html_content = re.sub(r'<meta\s+property=["\']og:[^>]+>', '', html_content, flags=re.IGNORECASE)
-        html_content = re.sub(r'<meta\s+name=["\']twitter:[^>]+>', '', html_content, flags=re.IGNORECASE)
-        html_content = re.sub(r'<meta\s+name=["\']description["\'][^>]+>', '', html_content, flags=re.IGNORECASE)
-        
-        injection = f"<head>\n{meta_tags}"
-        if 'cdn.tailwindcss.com' not in html_content:
-            injection += '\n    <script src="https://cdn.tailwindcss.com"></script>'
-        html_content = re.sub(r'<head[^>]*>', injection, html_content, count=1, flags=re.IGNORECASE)
-
-    # 🧹 AGGRESSIVE CLEANUP: Strip any AI hallucinated modals, drawers, or scripts 
-    # to ensure the GUARANTEED_CART_ENGINE is the ONLY source of truth for functionality.
-    html_content = re.sub(r'<div[^>]*id=["\']productModal["\'][^>]*>.*?</div>\s*</div>', '', html_content, flags=re.DOTALL | re.IGNORECASE)
-    html_content = re.sub(r'<aside[^>]*id=["\']cartDrawer["\'][^>]*>.*?</aside>', '', html_content, flags=re.DOTALL | re.IGNORECASE)
-    html_content = re.sub(r'<div[^>]*id=["\']cartOverlay["\'][^>]*>.*?</div>', '', html_content, flags=re.DOTALL | re.IGNORECASE)
-    html_content = re.sub(r'<script[^>]*>.*?window\.KIOSK_PRODUCTS.*?</script>', '', html_content, flags=re.DOTALL | re.IGNORECASE)
-    html_content = re.sub(r'<img[^>]+src=["\']\s*["\'][^>]*>', '', html_content, flags=re.IGNORECASE)
-    html_content = re.sub(r'<img[^>]+src=["\'](None|null|undefined)["\'][^>]*>', '', html_content, flags=re.IGNORECASE)
-
-    if re.search(r'</body>', html_content, re.IGNORECASE):
-        return re.sub(r'</body>', GUARANTEED_CART_ENGINE + '\n</body>', html_content, count=1, flags=re.IGNORECASE)
-    return html_content + '\n' + GUARANTEED_CART_ENGINE
-
-
-def query_openrouter(prompt_instruction: str, api_key: str) -> str:
-    url = "https://openrouter.ai/api/v1/chat/completions"
-    headers = {
-        "Authorization": "Bearer " + api_key.strip(),
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://marketplace-beryl-delta.vercel.app",
-        "X-Title": "Marketplace Kiosk Engine"
-    }
-    model_name = os.environ.get('OPENROUTER_MODEL') or 'meta-llama/llama-3.3-70b-instruct'
-    payload = {"model": model_name, "messages": [{"role": "user", "content": prompt_instruction}]}
-    try:
-        req = urllib.request.Request(url, data=json.dumps(payload).encode('utf-8'), headers=headers, method='POST')
-        with urllib.request.urlopen(req, timeout=60) as response:
-            res_data = json.loads(response.read().decode('utf-8'))
-            return res_data['choices'][0]['message']['content']
-    except Exception as e:
-        print(f"OpenRouter Error: {e}", flush=True)
-        return None
-
-
-def generate_kiosk_template(kiosk_name: str, bio: str, prompt: str, logo_url: str = '', hero_url: str = '', bg_url: str = '', currency: str = '₦') -> str:
-    primary_meta_img = logo_url or hero_url or bg_url or ''
-
-    # 🚨 THE "HOLY GRAIL" PROMPT: Forces the AI to use your exact backend logic
-    system_instruction = (
-        f'You are a *Creative* *Elite* UI/UX Designer who makes the best designed website . Your task is to restyle a "Master Baseline Template" to match a specific design prompt using Tailwind CSS, you make design as you want and be creative as long as it does not affect functionality.\n'
-        'CRITICAL: You MUST preserve the EXACT Jinja2 backend logic, URL routing, and data structures provided in the baseline.\n\n'
+    <footer class="border-t border-white/5 bg-zinc-950 py-12 text-center">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p class="text-zinc-600 text-sm">Made with <span class="text-amber-500">♥</span> by <a href="/" class="text-zinc-400 hover:text-white font-semibold transition-colors">Marketplace</a> • Powered by Techlite</p>
+        </div is the exact backend logic, URL routing, and data structures provided in the baseline.\n\n'
         'STRICT PRESERVATION RULES:\n'
         '1. NEVER alter, remove, or misspell ANY Jinja2 {{ }} or {% %} tags.\n'
         '2. NEVER change the image URL logic: `{{ url if url.startswith(\'http\') else url_for(...) }}`.\n'
@@ -343,6 +318,13 @@ def generate_kiosk_template(kiosk_name: str, bio: str, prompt: str, logo_url: st
         '6. Ensure the header has a button with `onclick="toggleCart()"` and `<span id="cartCountBadge">0</span>`.\n'
         '7. Ensure products have `<button onclick="openProductModal({{ p.id }})">`.\n'
         '8. Output ONLY raw HTML. No markdown backticks.\n\n'
+        'ELITE DESIGN PRINCIPLES TO APPLY:\n'
+        '- Use a sophisticated, premium color palette (e.g., deep zinc/stone backgrounds `bg-zinc-950`, subtle borders `border-white/10`, and elegant accents like `amber-400` or `emerald-500`).\n'
+        '- Typography: Pair a clean sans-serif (Inter) for UI with an elegant serif (Playfair Display) for headings. Use `tracking-tight` for large headings.\n'
+        '- Cards: Use `aspect-[4/5]` for product images, `rounded-2xl`, subtle background colors (`bg-zinc-900/50`), and smooth hover effects (`hover:-translate-y-1`, `hover:shadow-2xl`, `group-hover:scale-105` for images).\n'
+        '- Buttons: Sleek, modern, with smooth transitions (`transition-all duration-300`).\n'
+        '- Spacing: Use generous whitespace (`mb-16`, `py-12`, `gap-6`) to let the design breathe and feel expensive.\n'
+        '- Glassmorphism: Use `backdrop-blur-xl` and semi-transparent backgrounds for headers or floating elements.\n\n'
         'MASTER BASELINE JINJA2 LOGIC (You MUST use these exact structures for the backend data):\n'
         '---\n'
         '<!-- LOGO -->\n'
@@ -383,7 +365,7 @@ def generate_kiosk_template(kiosk_name: str, bio: str, prompt: str, logo_url: st
         '    <button onclick="openProductModal({{ p.id }})">VIEW & ORDER</button>\n'
         '{% endfor %}\n'
         '---\n\n'
-        'TASK: Take the "Design Instructions" and apply beautiful, modern Tailwind CSS classes to the HTML structure. Use the Master Baseline Jinja2 Logic above to populate the data. Remember: DO NOT output the cart/modal HTML or JS. Output ONLY the visual storefront HTML.'
+        'TASK: Take the "Design Instructions" and apply beautiful, modern, Pinterest-tier Tailwind CSS classes to the HTML structure. Use the Master Baseline Jinja2 Logic above to populate the data. Remember: DO NOT output the cart/modal HTML or JS. Output ONLY the visual storefront HTML.'
     )
 
     # 1. Primary: Google Gemini
@@ -416,7 +398,7 @@ def generate_kiosk_template(kiosk_name: str, bio: str, prompt: str, logo_url: st
         except Exception as e:
             print(f"⚠️ [AI BUILDER] OpenRouter Tier 2 notice: {e}", flush=True)
 
-    # 3. Tier 3: Master Fallback (Guaranteed 100% Fail-Safe & Functional)
-    print(f"🛡️ [AI BUILDER] Activating Master Marketplace Fallback for '{kiosk_name}'.", flush=True)
+    # 3. Tier 3: Master Fallback (Guaranteed 100% Fail-Safe & Elite Design)
+    print(f"🛡️ [AI BUILDER] Activating Elite Master Marketplace Fallback for '{kiosk_name}'.", flush=True)
     fallback_html = get_curated_fallback_template(kiosk_name, bio, prompt)
     return inject_bulletproof_chassis(fallback_html, kiosk_name, bio, primary_meta_img)

@@ -71,43 +71,40 @@ def build_endpoint():
 # ==============================================================================
 def run_universal_task(job):
     task_id = job.get('task_id')
+    task_type = job.get('task_type', 'unknown') # <-- GRAB THE TASK TYPE
     callback_url = job.get('callback_url')
     system_prompt = job.get('system_prompt', '')
     user_prompt = job.get('user_prompt', '')
     secret = (job.get('secret') or os.environ.get('BUILDER_SECRET_KEY') or '').strip()
 
-    print(f"🚀 [WORKER] Starting Universal AI Task #{task_id}")
+    print(f" [WORKER] Starting {task_type} task #{task_id}")
 
     try:
-        # Call the new universal generator in ai_builder.py
         html = generate_universal_template(system_prompt, user_prompt)
 
         if not html:
-            print(f"⚠️ [WORKER] Universal generation returned empty for #{task_id}.")
+            print(f"️ [WORKER] {task_type} generation returned empty for #{task_id}.")
             return
 
         headers = {
             "Authorization": f"Bearer {secret}",
             "Content-Type": "application/json"
         }
+        
+        # ECHO THE TASK TYPE BACK IN THE PAYLOAD
         payload = {
             "task_id": task_id,
+            "task_type": task_type,  # <-- ECHO IT BACK
             "status": "success",
             "html": html
         }
 
-        print(f"📦 [WORKER] Delivering Universal result to: {callback_url}")
+        print(f"📦 [WORKER] Delivering {task_type} result to: {callback_url}")
         res = requests.post(callback_url, json=payload, headers=headers, timeout=30)
         print(f"✅ [WORKER] Main app accepted callback. Status: {res.status_code}")
 
     except Exception as e:
-        print(f"❌ [WORKER] Error during Universal task #{task_id}: {e}")
-        # Send error back to main app so it doesn't hang forever
-        requests.post(callback_url, json={
-            "task_id": task_id, 
-            "status": "error", 
-            "message": str(e)
-        }, headers={"Authorization": f"Bearer {secret}", "Content-Type": "application/json"})
+        print(f"❌ [WORKER] Error during {task_type} task #{task_id}: {e}")
 
 
 @app.route('/execute', methods=['POST'])

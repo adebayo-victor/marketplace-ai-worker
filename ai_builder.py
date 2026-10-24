@@ -571,3 +571,45 @@ def generate_kiosk_template(kiosk_name: str, bio: str, prompt: str, logo_url: st
     print(f"🛡️ [AI BUILDER] Activating Elite Master Marketplace Fallback for '{kiosk_name}'.", flush=True)
     fallback_html = get_curated_fallback_template(kiosk_name, bio, prompt)
     return inject_bulletproof_chassis(fallback_html, kiosk_name, bio, primary_meta_img)
+
+
+def generate_universal_template(system_prompt: str, user_prompt: str) -> str:
+    """
+    Universal AI Generator: Combines system rules and user request, 
+    then routes through the existing Tier 1 (Gemini) / Tier 2 (OpenRouter) fallback logic.
+    """
+    full_instruction = f"{system_prompt}\n\n---\n\nUSER REQUEST:\n{user_prompt}"
+    
+    # 1. Primary: Google Gemini (Reusing your existing logic)
+    gemini_key = (os.environ.get('AI_API_KEY') or '').strip()
+    if gemini_key:
+        try:
+            import google.generativeai as genai
+            genai.configure(api_key=gemini_key)
+            model_name = os.environ.get('GEMINI_MODEL', 'gemini-2.0-flash')
+            model = genai.GenerativeModel(model_name)
+            response = model.generate_content(full_instruction)
+            raw_text = response.text if response and hasattr(response, 'text') else ""
+            raw_html = clean_html_fences(raw_text) # Assuming you have this helper
+            if raw_html:
+                print(f"✨ [AI BUILDER] Universal template generated via Primary Gemini!", flush=True)
+                return raw_html
+        except Exception as e:
+            print(f"⚠️ [AI BUILDER] Gemini Universal notice: {e}", flush=True)
+
+    # 2. Backup: OpenRouter (Reusing your existing logic)
+    openrouter_key = (os.environ.get('OPENROUTER_API_KEY') or '').strip()
+    if openrouter_key:
+        try:
+            raw_response = query_openrouter(full_instruction, openrouter_key)
+            if raw_response:
+                raw_html = clean_html_fences(raw_response)
+                if raw_html:
+                    print("✨ [AI BUILDER] Universal template generated via Backup OpenRouter!", flush=True)
+                    return raw_html
+        except Exception as e:
+            print(f"⚠️ [AI BUILDER] OpenRouter Universal notice: {e}", flush=True)
+
+    print("❌ [AI BUILDER] Universal generation failed across all tiers.", flush=True)
+    return ""
+
